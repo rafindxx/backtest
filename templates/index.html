@@ -1,0 +1,462 @@
+<!doctype html>
+{% load static %}
+<html class="no-js" lang="en">
+   <head>
+      <meta charset="utf-8">
+      <!--====== Title ======-->
+      <title>Back Test Calculation</title>
+      <meta name="description" content="">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+      <!--====== Favicon Icon ======-->
+      <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" type="image/png">
+      <!--====== Slick CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/slick.css' %}">
+      <!--====== Font Awesome CSS ======-->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <!--====== Line Icons CSS ======-->
+      <!--====== Animate CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
+      <!--====== Bootstrap CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+      <!--====== Default CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/default.css' %}">
+      <!--====== Style CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+   </head>
+   <body>
+
+                           <div class="loader" style="display: none;" id="spinner">
+                  <img src="{% static 'assets/images/loader.gif' %}"/></div>
+      <!--[if IE]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+      <![endif]-->
+      <!--====== PRELOADER PART START ======-->
+      <div class="preloader">
+         <div class="loader">
+            <div class="ytp-spinner">
+               <div class="ytp-spinner-container">
+                  <div class="ytp-spinner-rotator">
+                     <div class="ytp-spinner-left">
+                        <div class="ytp-spinner-circle"></div>
+                     </div>
+                     <div class="ytp-spinner-right">
+                        <div class="ytp-spinner-circle"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!--====== PRELOADER PART ENDS ======-->
+      <!--====== HEADER PART START ======-->
+      <div class="sticky">
+         <header class="header-area">
+            <div class="navbar-area headroom">
+               <div class="container">
+                  <div class="row">
+                     <div class="col-lg-12">
+                        <nav class="navbar navbar-expand-lg">
+                           <a class="navbar-brand" href="{% url 'home' %}">
+                           <img src="{% static 'assets/images/logo.png' %}" alt="Logo">
+                           </a>
+                           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                           <span class="toggler-icon"></span>
+                           <span class="toggler-icon"></span>
+                           <span class="toggler-icon"></span>
+                           </button>
+                           <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
+                           </div>
+                           <!-- navbar collapse -->
+                           <div class="navbar-btn d-none d-sm-inline-block">
+                              <div class="header-hero-content">
+                                 <h3 class="hero-title wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.2s"><b></b> <span>Back Test </span> Calculation</b></h3>
+                              </div>
+                           </div>
+                        </nav>
+                        <!-- navbar -->
+                     </div>
+                  </div>
+                  <!-- row -->
+               </div>
+               <!-- container -->
+            </div>
+            <!-- navbar area -->
+            <div id="home" class="header-hero bg_cover d-lg-flex align-items-center" style="background-image: url({% static 'assets/images/header-hero.jpg' %})">
+               <div class="container">
+                  <div class="row">
+                     <div class="col-lg-7">
+                        <div class="header-hero-content">
+                           <div class="row">
+                              <div class="col-lg-12 col-xs-12">
+                                 <ol class="Notice" >
+                                    <li style="font-size:20px;list-style:none; font-weight:bold;">CSV file should be Period , ISIN , Weight, Start Date, End Date and Country format.</li>
+                                    <li style="font-size:20px;list-style:none; font-weight:bold;">System will treat weight as in % only.</li>
+                                 </ol>
+                                 <div class="contact-info pt-30">
+                                    <div class="row">
+                                       <div class="col-lg-4 col-md-6">
+                                          <div class="single-contact-info contact-color-2 mt-30 d-flex  wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s">
+                                             <div class="contact-info-icon">
+                                                <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                                             </div>
+                                             <div class="contact-info-content media-body">
+                                                <a href='inputs/inputsample.csv' style="FONT-WEIGHT: 1000;     font-size: 15px;">Download  sample Input file</a>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div class="col-lg-4 col-md-6">
+                                          <div class="single-contact-info contact-color-3 mt-30 d-flex  wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.9s">
+                                             <div class="contact-info-icon">
+                                                <i class="fa fa-percent" aria-hidden="true"></i>
+                                             </div>
+                                             <div class="contact-info-content media-body">
+                                                <a href='inputs/Withholding-Tax-Rates.csv' style="FONT-WEIGHT: 1000; font-size: 15px;">Download  Tax Rate Input file </a>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                           <br/>
+                        </div>
+                        <!-- header hero content -->
+                     </div>
+                  </div>
+                  <!-- row -->
+               </div>
+               <!-- container -->
+               <div class="header-hero-image d-flex align-items-center wow fadeInRightBig" data-wow-duration="1s" data-wow-delay="1.1s">
+                  <div class="image">
+                     <img src="{% static 'assets/images/hero-image.png' %}" alt="Hero Image">
+                  </div>
+               </div>
+               <!-- header hero image -->
+            </div>
+            <!-- header hero -->
+         </header>
+      </div>
+      <!--====== HEADER PART ENDS ======-->
+      <div class="container my-5">
+         <div class="tabs">
+            <div class="tab-2">
+               <label for="tab2-1">Back Test Calculations</label>
+               <input id="tab2-1" name="tabs-two" type="radio" checked="checked">
+               <div>
+                  <p>
+                  <div class="card-body rounded-top border-top p-5">
+                     <!-- Section heading -->
+                     <div class="form-group row justify-content-center">
+                        <div class="col-6">
+                           <h3 class="font-weight-bold my-4" style="text-align: center">Calculation</h3>
+                           <!-- Section description -->
+                           <p class="font-weight-light mx-auto mb-4 pb-2">You Can Perfom Portfolio Generation  and  Rerun Saved Portfolio and Download report</p>
+                        </div>
+                     </div>
+                     <form id="backtest-cal" class="backtest-cal" name="backtest-cal" action="#">
+                        <div class="msg"></div>
+                        <input id="confirmbox" name="confirmbox" value="" type="hidden">
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend w-100">
+                                    <div class="input-group-text"> Portfolio Name</div>
+<input id="name" name="name" placeholder="Enter Portfolio Name" type="text" class="form-control">
+                                 </div>
+
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text">Index Currency</div>
+                                 </div>
+                                 <select id="currency" name="currency" class="custom-select">
+                                    <option value="USD">USD</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="AUD">AUD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="BRL">BRL</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="CZK">CZK</option>
+                                    <option value="DKK">DKK</option>
+                                    <option value="HKD">HKD</option>
+                                    <option value="HUF">HUF</option>
+                                    <option value="INR">INR</option>
+                                    <option value="IDR">IDR</option>
+                                    <option value="IDR">ILS</option>
+                                    <option value="JPY">JPY</option>
+                                    <option value="MYR">MYR</option>
+                                    <option value="MXN">MXN</option>
+                                    <option value="NZD">NZD</option>
+                                    <option value="NOK">NOK</option>
+                                    <option value="PEN">PEN</option>
+                                    <option value="PEN">PHP</option>
+                                    <option value="PLN">PLN</option>
+                                    <option value="QAR">QAR</option>
+                                    <option value="QAR">RUB</option>
+                                    <option value="SGD">SGD</option>
+                                    <option value="ZAR">ZAR</option>
+                                    <option value="SEK">SEK</option>
+                                    <option value="CHF">CHF</option>
+                                    <option value="THB">THB</option>
+                                    <option value="TRY">TRY</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text">Identifier</div>
+                                 </div>
+                                 <select id="identifier" name="identifier" class="custom-select">
+                                    <option value="ISIN">ISIN</option>
+                                    <option value="FSYM_ID">FSYM_ID</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text">Spin-Off</div>
+                                 </div>
+                                 <select id="spin_off" name="spin_off" class="custom-select">
+                                    <option value="MA">MARKETCAP ADJUSTMENT</option>
+                                    <option value="EWA">EQUAL WEIGHT ADJUSTMENT</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text"> Index Value</div>
+                                 </div>
+                                 <input id="index_vlaue" name="index_vlaue" placeholder="Enter Index Value" type="text" class="form-control">
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text">Market Value</div>
+                                 </div>
+                                 <input id="market_value" name="market_value" placeholder="Enter Market Value" type="text" class="form-control">
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupFileAddon01">Portfolio*</span>
+                                 </div>
+                                 <input type="file" class="form-control" id="protfolio_file" name="protfolio_file">
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroupFileAddon01">Tax Rate</span>
+                                 </div>
+                                 <input type="file" class="form-control" id="tax_rate" name="tax_rate">
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="input-group-prepend">
+                                    <div class="input-group-text">Download Constituents File</div>
+                                 </div>
+                                 <select id="download" name="downlaod" class="custom-select">
+                                    <option value="ND">No Download</option>
+                                    <option value="CD">Complete Download </option>
+                                    <option value="DED">Download For End Dates Of All Portfolios</option>
+                                 </select>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="form-group row">
+                           <div class="col-6">
+                              <div class="input-group">
+                                 <div class="custom-file">
+                                    <button name="submit" id="submit" style="margin: 10px 11px 4px 478px; background-color: #ee3124; border-color:#ee3124" type="submit" class="btn btn-primary">Submit</button>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+
+                     </form>
+                     <div class="justify-content-center downlaod" style="display:none">
+                        <div class="alert alert-success">
+                           <strong>Success!</strong> Indicates a successful or positive action.</div>
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Index Values File</button>
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Constituents File</button><a href="{% url 'home' %}">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> New Calculation</button></a></div>
+                  </div>
+                  .</p>
+               </div>
+            </div>
+            <div class="tab-2">
+               <label for="tab2-2">Rerun Saved Portfolio </label>
+               <input id="tab2-2" name="tabs-two" type="radio">
+               <div>
+                  <p>
+                  <div class="card-body rounded-top border-top p-5">
+                     <div class="form-group row justify-content-center">
+                        <div class="col-6">
+                           <h3 class="font-weight-bold my-4" style="text-align: center">Portfolio Selection </h3>
+                           <!-- Section description -->
+                           <p class="font-weight-light mx-auto mb-4 pb-2">You can select any of the saved portfolio from a list of all available portfolio</p>
+                        </div>
+                     </div>
+                     <form class="form-inline" action="calculation/get_portfolio/">
+                        <div class="col-4">
+                           <div class="input-group">
+                              <div class="input-group-prepend">
+                                 <div class="input-group-text">Select Portfolio</div>
+                              </div>
+                              <select id="selectboxid" name="selectboxid" class="custom-select">
+                                 {% for portfolio in all_objects %}
+
+                                 <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
+                                 {% endfor %}
+                              </select>
+                           </div>
+                        </div>
+                        <div class="col-4">
+                           <div class="input-group">
+                              <div class="input-group-prepend">
+                                 <div class="input-group-text">Start Date</div>
+                              </div>
+                              <input class="form-control" id="stat_date" name="stat_date" placeholder="MM/DD/YYYY" type="date"/>
+                           </div>
+                        </div>
+                        <div class="col-4">
+                           <div class="input-group">
+                              <div class="input-group-prepend">
+                                 <div class="input-group-text">End Date</div>
+                              </div>
+                              <input class="form-control" id="end_date" name="end_date" placeholder="MM/DD/YYYY" type="date"/>
+                           </div>
+                        </div>
+                        <button name="submit2" id="submit2" style="margin: 10px 11px 4px 478px; background-color: #ee3124; border-color:#ee3124" type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                  </form>
+               </div>
+               </p>
+            </div>
+         </div>
+      </div>
+      <style>
+         .border-top {
+         border-top: 5px solid #ee3124 !important;
+         border-top-left-radius: .25rem!important;
+         border-top-right-radius: .25rem!important;
+         }
+      </style>
+      </div>
+      <!-- Footer -->
+      <!-- The Modal -->
+      <div class="modal fade" id="myModal">
+         <div class="modal-dialog">
+            <div class="modal-content">
+               <!-- Modal Header -->
+               <div class="modal-header">
+                  <h4 class="modal-title">
+                     <div class="image">
+                        <img src="{% static 'assets/images/logo.png' %}" style="width: 100px" alt="Hero Image">
+                     </div>
+                  </h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+               </div>
+               <!-- Modal body -->
+               <div class="modal-body">
+                  <div class="warning">
+                  </div>
+                  Do you want to calculate?
+               </div>
+               <!-- Modal footer -->
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+                  <button type="submit" class="btn btn-success" form="backtest-cal" id="confirmYes">Calculate</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+      <footer class="page-footer font-small blue">
+         <!-- Copyright -->
+         <div class="footer-copyright text-center py-3">© 2020 Copyright:
+            <a href="https://www.indxx.com/"> indxx.com</a>
+         </div>
+         `
+         <!-- Copyright -->
+      </footer>
+      <!-- Footer -->
+      <!--====== FOOTER PART ENDS ======-->
+      <!--====== BACK TOP TOP PART START ======-->
+      <a href="#" class="back-to-top"><i class="lni-chevron-up"></i></a>
+      <!--====== BACK TOP TOP PART ENDS ======-->
+      <!--====== PART START ======-->
+      <!--
+         <section class="">
+             <div class="container">
+                 <div class="row">
+                     <div class="col-lg-">
+
+                     </div>
+                 </div>
+             </div>
+         </section>
+         -->
+      <!--====== PART ENDS ======-->
+      <!-- row -->
+      <!--====== Jquery js ======-->
+      <script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+      <script src="{% static 'assets/js/vendor/modernizr-3.7.1.min.js' %}"></script>
+      <!--====== Bootstrap js ======-->
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+      <!--====== Plugins js ======-->
+      <script src="{% static 'assets/js/plugins.js' %}"></script>
+      <!--====== Slick js ======-->
+      <script src="{% static 'assets/js/slick.min.js' %}"></script>
+      <!--====== Counter Up js ======-->
+      <script src="{% static 'assets/js/waypoints.min.js' %}"></script>
+      <script src="{% static 'assets/js/jquery.counterup.min.js' %}"></script>
+      <!--====== Appear js ======-->
+      <script src="{% static 'assets/js/jquery.appear.min.js' %}"></script>
+      <!--====== WOW js ======-->
+      <script src="{% static 'assets/js/wow.min.js' %}"></script>
+      <!--====== Headroom js ======-->
+      <script src="{% static 'assets/js/headroom.min.js' %}"></script>
+      <!--====== Jquery Nav js ======-->
+      <script src="{% static 'assets/js/jquery.nav.js' %}"></script>
+      <!--====== Scroll It js ======-->
+      <script src="{% static 'assets/js/scrollIt.min.js' %}"></script>
+      <!--====== Main js ======-->
+      <script src="{% static 'assets/js/main.js' %}"></script>
+      <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+      <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
+      <script src="{% static 'assets/js/custom-dev.js' %}"></script>
+      <script type="text/javascript">
+         function refreshPage(){
+    window.location.reload();
+}
+
+      </script>
+   </body>
+</html>

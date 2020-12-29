@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import pyodbc
 #import sql_server.pyodb
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -76,31 +77,31 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ENABLE_API_ROOT = False
 
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'sql_server.pyodbc',
-#         'NAME': 'Backtest',
-#         'USER': 'sa',
-#         'PASSWORD': 'Indxx@1234',
-#         'HOST': '104.130.31.75',
-#         'PORT': '1433',
-#         'OPTIONS': {
-#          'host_is_server': True,
-#          'driver': 'ODBC Driver 11 for SQL Server',
-#      }
-#     }
-# }
-
+#https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'backtest',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost'
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'Backtest',
+        'USER': 'sa',
+        'PASSWORD': 'Indxx@1234',
+        'HOST': '104.130.31.75',
+        'PORT': '1433',
+        'OPTIONS': {
+         'host_is_server': True,
+         'driver': 'ODBC Driver 11 for SQL Server',
+     }
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'backtest',
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost'
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

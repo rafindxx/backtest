@@ -41,7 +41,7 @@ class PortfolioDescription(models.Model):
 class PortfolioComposition(models.Model):
     """Model to store event type info
     """
-    portfolio_id = models.ForeignKey(PortfolioDescription, on_delete=models.CASCADE)
+    portfolio = models.ForeignKey(PortfolioDescription, on_delete=models.CASCADE)
     isin = models.CharField(max_length=50)
     ric = models.CharField(max_length=50)
     weights = models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
@@ -66,7 +66,7 @@ class TaxRate(models.Model):
     """Model to store event type info
     """
     country = models.CharField(max_length=50)
-    index_value_ntr = models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
+    tax = models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
 
     class Meta:
         db_table = 'tax_rate'

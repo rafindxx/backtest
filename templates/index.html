@@ -101,7 +101,7 @@
                                                 <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                                              </div>
                                              <div class="contact-info-content media-body">
-                                                <a href='inputs/inputsample.csv' style="FONT-WEIGHT: 1000;     font-size: 15px;">Download  sample Input file</a>
+                                                <a id="download1" href="{% static '/backtest-file/sample/Backtest_Input.csv' %}" style="FONT-WEIGHT: 1000;     font-size: 15px;">Download  Sample Input File</a>
                                              </div>
                                           </div>
                                        </div>
@@ -111,7 +111,7 @@
                                                 <i class="fa fa-percent" aria-hidden="true"></i>
                                              </div>
                                              <div class="contact-info-content media-body">
-                                                <a href='inputs/Withholding-Tax-Rates.csv' style="FONT-WEIGHT: 1000; font-size: 15px;">Download  Tax Rate Input file </a>
+                                                <a id="download2"  href="{% static '/backtest-file/sample/Withholding-Tax-Rates.csv' %}" style="FONT-WEIGHT: 1000; font-size: 15px;">Download Tax Rate Input File </a>
                                              </div>
                                           </div>
                                        </div>
@@ -161,7 +161,7 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend w-100">
-                                    <div class="input-group-text"> Portfolio Name</div>
+                                    <div class="input-group-text"> Portfolio Name*</div>
 <input id="name" name="name" placeholder="Enter Portfolio Name" type="text" class="form-control">
                                  </div>
 
@@ -238,7 +238,7 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend">
-                                    <div class="input-group-text"> Index Value</div>
+                                    <div class="input-group-text"> Index Value*</div>
                                  </div>
                                  <input id="index_vlaue" name="index_vlaue" placeholder="Enter Index Value" type="text" class="form-control">
                               </div>
@@ -248,7 +248,7 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend">
-                                    <div class="input-group-text">Market Value</div>
+                                    <div class="input-group-text">Market Value*</div>
                                  </div>
                                  <input id="market_value" name="market_value" placeholder="Enter Market Value" type="text" class="form-control">
                               </div>
@@ -299,13 +299,17 @@
                         </div>
 
                      </form>
-                     <div class="justify-content-center downlaod" style="display:none">
-                        <div class="alert alert-success">
-                           <strong>Success!</strong> Indicates a successful or positive action.</div>
-                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Index Values File</button>
-                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Constituents File</button><a href="{% url 'home' %}">
-                     <button type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> New Calculation</button></a></div>
+
                   </div>
+                   <div class="col-12 justify-content-center downlaod" style="display:none">
+                        <div class="alert alert-success"></div>
+                        <a id="index" href="">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Index Values File</button></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="constitute" href="">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Constituents File</button></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     <a href="{% url 'home' %}">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> New Calculation</button></a></div>
                   .</p>
                </div>
             </div>
@@ -391,7 +395,7 @@
                <!-- Modal footer -->
                <div class="modal-footer">
                   <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
-                  <button type="submit" class="btn btn-success" form="backtest-cal" id="confirmYes">Calculate</button>
+                  <button type="submit" class="btn btn-success" form="backtest-cal" id="confirmYes" >Calculate</button>
                </div>
             </div>
          </div>

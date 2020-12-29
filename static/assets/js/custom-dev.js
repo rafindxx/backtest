@@ -16,16 +16,16 @@ $(document).ready(function() {
         },
         messages: {
             name:{
-               required: 'Please add the name!'
+               required: 'Please add the portfolio name!'
             } ,
             index_vlaue:{
-               required: 'Please add the index value!'
+               required: 'Please add the index value for portfolio!'
             } ,
             market_value:{
-               required: 'Please add the market value!'
+               required: 'Please add the market value for portfolio!'
             } ,
             protfolio_file:{
-                    required: "Please Select CSV file only"
+                    required: "Please select input CSV file only"
             } ,
         }
     });
@@ -53,6 +53,8 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
  $("#backtest-cal").on('submit', function(e){
       e.preventDefault();
+      if($("#backtest-cal").isValid){
+          $("#myModal").modal('hide');
          var fd = new FormData();
          var files = document.getElementById('protfolio_file').files.length;
          for (var index = 0; index < files; index++) {
@@ -79,7 +81,6 @@ var csrftoken = getCookie('csrftoken');
          fd.append('download', download);
          fd.append('confirmbox', confirmbox);
          fd.append('csrfmiddlewaretoken', csrftoken);
-         console.log(fd)
          $.ajax({
                type: 'POST',
                url: 'calculation/portfolio/',
@@ -90,7 +91,6 @@ var csrftoken = getCookie('csrftoken');
                processData:false,
          beforeSend: function(){
             $('.submit').attr("disabled","disabled");
-            $('#backtest-cal').css("opacity",".5");
             $('.loader').css('display','flex');
          },
          success: function(response){
@@ -99,19 +99,25 @@ var csrftoken = getCookie('csrftoken');
               $('.msg').html('<div class="alert alert-danger"><strong>Error!</strong>'+response.error+'</div>');
             }else if(response.warning){
                $('.loader').css('display','none');
+               $("#myModal").modal('show');
                $('#confirmbox').val("yes");
                $('.warning').html('<div class="alert alert-warning"><strong>Warning!</strong>'+response.warning+'</div>');
 
             }else if(response.success){
+              $("#myModal").modal('hide');
                $('.loader').css('display','none');
                $('#backtest-cal')[0].reset();
                $(".submit").removeAttr("disabled");
                $('.backtest-cal').css('display','none');
                $('.downlaod').css('display','block');
+               $('.alert-success').html('<strong>Success! </strong>'+response.success);
+               $("#index").attr("href", response.index_file);
+               $("#constitute").attr("href", response.constituents_file);
             }
 
          }
       });
+       }
    });
 //===================ajax call for genrate existing portfolio=======//
 $("#selectboxid").change(function() {

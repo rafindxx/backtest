@@ -85,11 +85,11 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
         row[10] = D_Index["Divisor_NTR"]
     Constituents_List_Final.extend(Constituents_List)
 def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,period,Tax_Rate,D_ISIN_Currency):
-    print("inside calshares"+ date)
+    #print("inside calshares"+ date)
     #ISIN,Currency,Country,TAX,Share PR,Share TR,Share NTR,Local Price,USD PRICE,MCAP PR,MCAP TR,MCAP NTR,Currency Price,Price Date,Weight PR,Weight TR,Weight NTR,Dividend,Special Dividend,Split,Spin
 
-    print(Latest_Price)
-    print(Latest_Ex_Rate)
+    # print(Latest_Price)
+    # print(Latest_Ex_Rate)
     #print(D_Price)
     M_Cap = D_Index["MV"]
     ISIN_Shares = {}
@@ -130,7 +130,7 @@ def Fill_Index_Report_Data(D_Index,Index_List,period,S_Date):
    Index_List.append(row)
 
 def Set_Latest_Price(list,D_Price,Latest_Price,date):
-    print("inside Latest Price" + date)
+    # print("inside Latest Price" + date)
     for row in list:
         var1 = row[1]+'_'+date
 
@@ -141,7 +141,7 @@ def Set_Latest_Price(list,D_Price,Latest_Price,date):
             Row.append(date)
             Latest_Price[row[1]] = Row
 def Get_Price(ISIN,D_Price,date,Latest_Price):
-    print("inside Get_Price" + date)
+    # print("inside Get_Price" + date)
     var1 = ISIN+'_'+date
 
     if var1 in D_Price:
@@ -151,7 +151,7 @@ def Get_Price(ISIN,D_Price,date,Latest_Price):
         return Latest_Price[ISIN][0]
 
 def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
-    print("inside Get_Ex_Rate" + date)
+    # print("inside Get_Ex_Rate" + date)
     var1 = fromCurrency +'_'+date
     if var1 in Ex_Rate:
         fromRate = (Ex_Rate[var1])
@@ -161,13 +161,13 @@ def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
         return 1
 
 def Set_Latest_Ex_Rate(Index_Currency,list,Ex_Rate,Latest_Ex_Rate,date,D_ISIN_Currency):
-    print("inside Set_Latest_Ex_Rate" + date)
+    # print("inside Set_Latest_Ex_Rate" + date)
     #print(Ex_Rate)
     for row in list:
 
         fromCurrency = D_ISIN_Currency[row[1]]
         var2 = fromCurrency +'_'+date
-        print(var2)
+        # print(var2)
 
         if var2 in Ex_Rate:
             fromRate = (Ex_Rate[fromCurrency+'_'+date])

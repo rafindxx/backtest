@@ -66,7 +66,7 @@ class TaxRate(models.Model):
     """Model to store event type info
     """
     country = models.CharField(max_length=50)
-    tax = models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
+    tax = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'tax_rate'

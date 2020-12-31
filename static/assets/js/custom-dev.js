@@ -53,8 +53,7 @@ function getCookie(name) {
 var csrftoken = getCookie('csrftoken');
  $("#backtest-cal").on('submit', function(e){
       e.preventDefault();
-      if($("#backtest-cal").isValid){
-          $("#myModal").modal('hide');
+         $("#myModal").modal('hide');
          var fd = new FormData();
          var files = document.getElementById('protfolio_file').files.length;
          for (var index = 0; index < files; index++) {
@@ -117,7 +116,6 @@ var csrftoken = getCookie('csrftoken');
 
          }
       });
-       }
    });
 //===================ajax call for genrate existing portfolio=======//
 $("#selectboxid").change(function() {

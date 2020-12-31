@@ -13,25 +13,22 @@ import dateutil.parser
 # look template in 'root folder'
 # The folder 'templates' is not checked inside the 'configuration folder'
 # But it is checked inside the 'app' folder
-D_Index = {}
-D_Index["Identifier"] = "ISIN"
-D_Index["IV"] = 1000
-D_Index["MV"] = 100000
-D_Index["Currency"] = "EUR"
-D_Index["Adjustment"] = "DA"#"SA"
-D_Index["DCFO"] = "ND"#"CD","EDD"
+
 
 class PortfolioView(View):
     """
     ** POST DATA **
     """
     def post(self, request):
+        D_Index = {}
         if request.method =='POST':
             file_name = handle_uploaded_file(request.FILES.get('protfolio_file'))
             identifier = request.POST.get('identifier')
             confirmbox = request.POST.get('confirmbox')
-            tax_file = request.POST.get('tax_rate')
+            tax_file = request.FILES.get('tax_rate')
             currency = request.POST.get('currency')
+            print(request.POST.get('index_vlaue'))
+            print(request.POST.get('market_value'))
             data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
             last_Period = data['last_Period']
             if data['error']:
@@ -49,8 +46,16 @@ class PortfolioView(View):
                 composition = portfolio_composition(data, currency, portfolio, last_Period)
                 if tax_file:
                     save_tax_rate = add_tax_rate(tax_file)
-                if portfolio:
-                    save_file = Cal_Index(D_Index, data['D_Data'], data['D_ISIN'],data['D_Date'])
+                print(composition)
+                print(portfolio)
+                if portfolio and composition:
+                    D_Index["Identifier"] = identifier
+                    D_Index["IV"] = int(request.POST.get('index_vlaue'))
+                    D_Index["MV"] = int(request.POST.get('market_value'))
+                    D_Index["Currency"] = currency
+                    D_Index["Adjustment"] = "DA"#"SA"
+                    D_Index["DCFO"] = "ND"#"CD","EDD"
+                    save_file = Cal_Index(D_Index, data['D_Data'], data['D_ISIN'], data['D_Date'])
                     data = {
                         'status': True,
                         'success': 'Portfolio and composition is created successfully!',
@@ -67,6 +72,7 @@ class PortfolioView(View):
 
 
 def create_portfolio(request, file_name, data, last_Period):
+    print('portfolio')
     start_date = last_Period+'_START'
     end_date =last_Period+'_END'
     portfolio_obj = PortfolioDescription.objects.create(
@@ -85,6 +91,7 @@ def create_portfolio(request, file_name, data, last_Period):
     return last_obj
 
 def portfolio_composition(data, currency, portfolio, last_Period):
+    print('portfolio tax rate')
     for comp_data in data['D_Data'][last_Period]:
         weights = remove_percent_symbole(comp_data[2])
         composition_obj = PortfolioComposition.objects.create(
@@ -98,15 +105,21 @@ def portfolio_composition(data, currency, portfolio, last_Period):
             quote_id =0,
             )
         last_composition = PortfolioDescription.objects.last()
+    return last_composition
 
 def add_tax_rate(tax_file):
     data = pd.read_csv(tax_file)
+    obj =TaxRate.objects.all()
     for i, j in data.iterrows():
-        taxRate = remove_percent_symbole(j['WHT'])
-        tax_rate = TaxRate.objects.create(
-            country = j['COUNTRY'],
-            tax  = Decimal(taxRate)
-            )
+        if j['COUNTRY'] not in obj:
+            TaxRate.objects.create(
+                country=j['COUNTRY'],
+                tax=j['WHT']
+                )
+        else:
+            TaxRate.objects.filter(country=j['COUNTRY']).update(tax=j['WHT'])
+
+    return True
 
 class GetPortfolioView(View):
     """docstring for GetPortfolioView"""

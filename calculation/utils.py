@@ -8,16 +8,8 @@ import calculation.Functions_Calculate as f_c
 from itertools import chain
 
 #======Database Connections===========================#
-#conn1 = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
-cur = connection.cursor()
-#==== Temporary dict data====//
-D_Index = {}
-D_Index["Identifier"] = "ISIN"
-D_Index["IV"] = 1000
-D_Index["MV"] = 100000
-D_Index["Currency"] = "EUR"
-D_Index["Adjustment"] = "DA"#"SA"
-D_Index["DCFO"] = "ND"#"CD","EDD"
+conn1 = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
+cur = conn1.cursor()
 
 def Validate_Read_CSV(file_Name, IDentifier):
     d1 = {}
@@ -155,7 +147,7 @@ def Get_PRICE(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
 def Get_Currency(cur,C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
     Query="SELECT RTS.iso_currency, RTS.date, RTS.exch_rate_usd, RTS.exch_rate_per_usd FROM FDS_DataFeeds.ref_v2.fx_rates_usd AS RTS WHERE RTS.date between '"+S_DATE+"' and '"+E_DATE+"' and RTS.iso_currency in ("+clist +") ORDER BY RTS.date"
-    print("Currency Query : "+Query)
+    # print ("Currency Query : "+Query)
     cur.execute(Query)
     dir = {}
     for row in cur:
@@ -192,8 +184,8 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date):
         Latest_Ex_Rate={}
 
         while S_Date_Minus_Five <= E_Date:
-            print(D_Price)
-            print(Ex_Rate)
+            # print(D_Price)
+            # print(Ex_Rate)
             f_c.Set_Latest_Ex_Rate(Index_Currency,D_Data[period],Ex_Rate,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),D_ISIN_Currency)
             f_c.Set_Latest_Price(D_Data[period],D_Price,Latest_Price,S_Date_Minus_Five.strftime("%x"))
             if S_Date_Minus_Five>=S_Date:
@@ -230,3 +222,21 @@ def remove_percent_symbole(weight):
     weight = ''.join([str(elem) for elem in weight])
     return weight
 
+
+def cleanup(path):
+    """
+    Removes files from the passed in path that are older than or equal
+    to the number_of_days
+    """
+    number_of_days= 2
+    time_in_secs = time.time() - (number_of_days * 24 * 60 * 60)
+    for root, dirs, files in os.walk(path, topdown=False):
+        for file_ in files:
+            full_path = os.path.join(root, file_)
+            stat = os.stat(full_path)
+
+            if stat.st_mtime <= time_in_secs:
+                remove(full_path)
+
+        if not os.listdir(root):
+            remove(root)

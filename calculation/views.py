@@ -3,12 +3,13 @@ from decimal import Decimal
 from calculation.models import PortfolioDescription, PortfolioComposition, TaxRate
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
-from calculation.utils import handle_uploaded_file, Validate_Read_CSV, remove_percent_symbole, Cal_Index
+from calculation.utils import handle_uploaded_file, Validate_Read_CSV, remove_percent_symbole, Cal_Index, Rerun_Dbdata
 from django.http import JsonResponse
 from django.views import View
 import csv
 import pandas as pd
 import dateutil.parser
+from django.db.models import Q
 
 # look template in 'root folder'
 # The folder 'templates' is not checked inside the 'configuration folder'
@@ -27,8 +28,6 @@ class PortfolioView(View):
             confirmbox = request.POST.get('confirmbox')
             tax_file = request.FILES.get('tax_rate')
             currency = request.POST.get('currency')
-            print(request.POST.get('index_vlaue'))
-            print(request.POST.get('market_value'))
             data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
             last_Period = data['last_Period']
             if data['error']:
@@ -46,15 +45,13 @@ class PortfolioView(View):
                 composition = portfolio_composition(data, currency, portfolio, last_Period)
                 if tax_file:
                     save_tax_rate = add_tax_rate(tax_file)
-                print(composition)
-                print(portfolio)
                 if portfolio and composition:
                     D_Index["Identifier"] = identifier
                     D_Index["IV"] = int(request.POST.get('index_vlaue'))
                     D_Index["MV"] = int(request.POST.get('market_value'))
                     D_Index["Currency"] = currency
-                    D_Index["Adjustment"] = "DA"#"SA"
-                    D_Index["DCFO"] = "ND"#"CD","EDD"
+                    D_Index["Adjustment"] = request.POST.get('spin_off')
+                    D_Index["DCFO"] = request.POST.get('download')
                     save_file = Cal_Index(D_Index, data['D_Data'], data['D_ISIN'], data['D_Date'])
                     data = {
                         'status': True,
@@ -72,7 +69,6 @@ class PortfolioView(View):
 
 
 def create_portfolio(request, file_name, data, last_Period):
-    print('portfolio')
     start_date = last_Period+'_START'
     end_date =last_Period+'_END'
     portfolio_obj = PortfolioDescription.objects.create(
@@ -91,7 +87,6 @@ def create_portfolio(request, file_name, data, last_Period):
     return last_obj
 
 def portfolio_composition(data, currency, portfolio, last_Period):
-    print('portfolio tax rate')
     for comp_data in data['D_Data'][last_Period]:
         weights = remove_percent_symbole(comp_data[2])
         composition_obj = PortfolioComposition.objects.create(
@@ -136,3 +131,36 @@ class GetPortfolioView(View):
                     'end_date': end_date
                     }
             return JsonResponse(data)
+
+
+class RerunPortfolio(View):
+    """docstring for ClassName"""
+    def post(self, request):
+        if request.method == 'POST':
+            D_Index ={}
+            portfolio_id = request.POST.get('portfolio_id')
+            portfolio = PortfolioDescription.objects.filter(id=portfolio_id)
+            get_composition = PortfolioComposition.objects.filter(portfolio_id=portfolio_id)
+            for portfolio_data in portfolio:
+                D_Index["Identifier"] = portfolio_data.identifier
+                D_Index["IV"] = int(portfolio_data.index_value_pr)
+                D_Index["MV"] = int(portfolio_data.market_value_pr)
+                D_Index["Currency"] = portfolio_data.currency
+                D_Index["Adjustment"] = request.POST.get('spin_off')
+                D_Index["DCFO"] = request.POST.get('download')
+                start_date = dateutil.parser.parse(str(portfolio_data.start_date)).date()
+                end_date = dateutil.parser.parse(str(portfolio_data.end_date)).date()
+                period = portfolio_data.period
+            rerun_date = Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition)
+            data = {
+            'status': True,
+            'success': 'Portfolio and composition is created successfully!',
+            'index_file': rerun_date['index_value_file'],
+            'constituents_file': rerun_date['constituents_file']
+                    }
+        else:
+            data = {
+                'status': False,
+                'error': 'Portfolio and composition is not created please enter valid details!'
+                }
+        return JsonResponse(data)

@@ -228,8 +228,8 @@
                                     <div class="input-group-text">Spin-Off</div>
                                  </div>
                                  <select id="spin_off" name="spin_off" class="custom-select">
-                                    <option value="MA">MARKETCAP ADJUSTMENT</option>
-                                    <option value="EWA">EQUAL WEIGHT ADJUSTMENT</option>
+                                    <option value="DA">MARKETCAP ADJUSTMENT</option>
+                                    <option value="SA">EQUAL WEIGHT ADJUSTMENT</option>
                                  </select>
                               </div>
                            </div>
@@ -326,16 +326,16 @@
                            <p class="font-weight-light mx-auto mb-4 pb-2">You can select any of the saved portfolio from a list of all available portfolio</p>
                         </div>
                      </div>
-                     <form class="form-inline" action="calculation/get_portfolio/">
+                     <form class="form-inline rerun" action="calculation/get_portfolio/" id="rerun" name="rerun">
                         <div class="col-4">
                            <div class="input-group">
                               <div class="input-group-prepend">
                                  <div class="input-group-text">Select Portfolio</div>
                               </div>
-                              <select id="selectboxid" name="selectboxid" class="custom-select">
+                              <select id="portfolio_id" name="portfolio_id" class="custom-select">
                                  {% for portfolio in all_objects %}
 
-                                 <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
+                                 <option value="{{ portfolio.id }}">{{ portfolio.name }} {{ portfolio.id }}</option>
                                  {% endfor %}
                               </select>
                            </div>
@@ -359,7 +359,18 @@
                         <button name="submit2" id="submit2" style="margin: 10px 11px 4px 478px; background-color: #ee3124; border-color:#ee3124" type="submit" class="btn btn-primary">Submit</button>
                   </div>
                   </form>
+                  <div class="col-12">
+                  <div class="alert alert-success"></div>
+                  <div class="col-4">
+                  <a id="rerun_index" href="">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Index Values File</button></a><a id="rerun_constitute" href=""></div>
+                        <div class="col-4"><a id="rerun_constitute" href="">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Constituents File</button></a></div>
+                     <div class="col-4">
+                     <a href="{% url 'home' %}">
+                     <button type="button" class="btn btn-primary"><i class="fa fa-refresh" aria-hidden="true"></i> New Calculation</button></a></div></div>
                </div>
+
                </p>
             </div>
          </div>
@@ -406,26 +417,9 @@
          <div class="footer-copyright text-center py-3">© 2020 Copyright:
             <a href="https://www.indxx.com/"> indxx.com</a>
          </div>
-         `
          <!-- Copyright -->
       </footer>
       <!-- Footer -->
-      <!--====== FOOTER PART ENDS ======-->
-      <!--====== BACK TOP TOP PART START ======-->
-      <a href="#" class="back-to-top"><i class="lni-chevron-up"></i></a>
-      <!--====== BACK TOP TOP PART ENDS ======-->
-      <!--====== PART START ======-->
-      <!--
-         <section class="">
-             <div class="container">
-                 <div class="row">
-                     <div class="col-lg-">
-
-                     </div>
-                 </div>
-             </div>
-         </section>
-         -->
       <!--====== PART ENDS ======-->
       <!-- row -->
       <!--====== Jquery js ======-->

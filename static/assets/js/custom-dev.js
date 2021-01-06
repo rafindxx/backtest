@@ -118,9 +118,9 @@ var csrftoken = getCookie('csrftoken');
       });
    });
 //===================ajax call for genrate existing portfolio=======//
-$("#selectboxid").change(function() {
+$("#portfolio_id").change(function() {
   var portfolio_data = new FormData();
-  var portfolio = $("#selectboxid").val();
+  var portfolio = $("#portfolio_id").val();
   portfolio_data.append('id', portfolio);
   portfolio_data.append('csrfmiddlewaretoken', csrftoken);
  $.ajax({
@@ -134,6 +134,44 @@ $("#selectboxid").change(function() {
          success: function(response){
           $('#stat_date').val(response.start_date);
           $('#end_date').val(response.end_date);
+          console.log(response)
+
+         }
+      });
+   });
+
+//===================ajax call for rerun portfolio=======//
+ $("#rerun").on('submit', function(e){
+  e.preventDefault();
+  var rerun_data = new FormData();
+  var portfolio_id = $("#portfolio_id").val();
+  var stat_date = $("#stat_date").val();
+  var end_date = $("#end_date").val();
+  rerun_data.append('portfolio_id', portfolio_id);
+  rerun_data.append('stat_date', stat_date);
+  rerun_data.append('end_date', end_date);
+  rerun_data.append('csrfmiddlewaretoken', csrftoken);
+ $.ajax({
+       type: 'POST',
+       url: 'calculation/rerun_portfolio/',
+       data: rerun_data,
+       dataType: 'json',
+       contentType: false,
+       cache: false,
+       processData:false,
+       beforeSend: function(){
+            $('.submit2').attr("disabled","disabled");
+            $('.loader').css('display','flex');
+         },
+         success: function(response){
+               $('.loader').css('display','none');
+               $('#backtest-cal')[0].reset();
+               $(".submit").removeAttr("disabled");
+               $('.rerun').css('display','none');
+               $('.rerun_downlaod').css('display','block');
+               $('.alert-success').html('<strong>Success! </strong>'+response.success);
+               $("#rerun_index").attr("href", response.index_file);
+               $("#rerun_constitute").attr("href", response.constituents_file);
           console.log(response)
 
          }

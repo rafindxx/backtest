@@ -336,6 +336,7 @@
                                  <div class="input-group-text">Select Portfolio</div>
                               </div>
                               <select id="portfolio_id" name="portfolio_id" class="custom-select">
+                                 <option value="">Select Portfolio</option>
                                  {% for portfolio in all_objects %}
 
                                  <option value="{{ portfolio.id }}">{{ portfolio.name }}</option>
@@ -356,7 +357,7 @@
                               <div class="input-group-prepend">
                                  <div class="input-group-text">End Date</div>
                               </div>
-                              <input class="form-control" id="end_date" name="end_date" placeholder="MM/DD/YYYY" type="date"/>
+                              <input class="form-control" id="end_date" name="end_date" placeholder="MM/DD/YYYY" value="" type="date"/>
                            </div>
                         </div>
 

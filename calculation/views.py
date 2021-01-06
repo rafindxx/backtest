@@ -153,11 +153,11 @@ class RerunPortfolio(View):
                 period = portfolio_data.period
             rerun_date = Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition)
             data = {
-            'status': True,
-            'success': 'Portfolio and composition is created successfully!',
-            'index_file': rerun_date['index_value_file'],
-            'constituents_file': rerun_date['constituents_file']
-                    }
+                    'status': True,
+                    'success': 'Index file and Constituents file is created please download.',
+                    'index_file': rerun_date['index_value_file'],
+                    'constituents_file': rerun_date['constituents_file']
+                }
         else:
             data = {
                 'status': False,

@@ -165,11 +165,9 @@ $("#portfolio_id").change(function() {
          },
          success: function(response){
                $('.loader').css('display','none');
-               $('#backtest-cal')[0].reset();
-               $(".submit").removeAttr("disabled");
-               $('.rerun').css('display','none');
-               $('.rerun_downlaod').css('display','block');
-               $('.alert-success').html('<strong>Success! </strong>'+response.success);
+               $('.down1').css('display','block');
+               $('.down2').css('display','block');
+               $('.rerun-msg').html('<div class="alert alert-success"><strong>Success!</strong>'+response.success+'</div>');
                $("#rerun_index").attr("href", response.index_file);
                $("#rerun_constitute").attr("href", response.constituents_file);
           console.log(response)

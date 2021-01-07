@@ -3,7 +3,7 @@ from decimal import Decimal
 from calculation.models import PortfolioDescription, PortfolioComposition, TaxRate
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
-from calculation.utils import handle_uploaded_file, Validate_Read_CSV, remove_percent_symbole, Cal_Index, Rerun_Dbdata
+from calculation.utils import handle_uploaded_file, Validate_Read_CSV, remove_percent_symbole, Cal_Index, Rerun_Dbdata, DateTime
 from django.http import JsonResponse
 from django.views import View
 import csv
@@ -28,21 +28,31 @@ class PortfolioView(View):
             confirmbox = request.POST.get('confirmbox')
             tax_file = request.FILES.get('tax_rate')
             currency = request.POST.get('currency')
-            data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
-            last_Period = data['last_Period']
-            if data['error']:
+            csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
+            last_Period = csv_data['last_Period']
+            index_vlaue = request.POST.get('index_vlaue')
+            market_value = request.POST.get('market_value')
+            if market_value==0 or index_vlaue==0:
+                index_vlaue= 1000
+                market_value=100000
+            if market_value < index_vlaue:
+                data = {
+                    'status': False,
+                    'error_msg': 'Market Value should be greater then Index Value.'
+                    }
+            elif csv_data['error']:
                 data = {
                     'status': True,
                     'error': data['error']
                     }
-            elif data['warning'] and confirmbox =='':
+            elif csv_data['warning'] and confirmbox =='':
                 data = {
                     'status': True,
-                    'warning': data['warning']
+                    'warning': csv_data['warning']
                     }
             else:
-                portfolio = create_portfolio(request, file_name, data, last_Period)
-                composition = portfolio_composition(data, currency, portfolio, last_Period)
+                portfolio = create_portfolio(request, file_name, csv_data, last_Period)
+                composition = portfolio_composition(csv_data, currency, portfolio, last_Period)
                 if tax_file:
                     save_tax_rate = add_tax_rate(tax_file)
                 if portfolio and composition:
@@ -52,7 +62,7 @@ class PortfolioView(View):
                     D_Index["Currency"] = currency
                     D_Index["Adjustment"] = request.POST.get('spin_off')
                     D_Index["DCFO"] = request.POST.get('download')
-                    save_file = Cal_Index(D_Index, data['D_Data'], data['D_ISIN'], data['D_Date'])
+                    save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'])
                     data = {
                         'status': True,
                         'success': 'Portfolio and composition is created successfully!',
@@ -70,7 +80,11 @@ class PortfolioView(View):
 
 def create_portfolio(request, file_name, data, last_Period):
     start_date = last_Period+'_START'
-    end_date =last_Period+'_END'
+    end_date = last_Period+'_END'
+    date_start = DateTime(data['D_Date'][start_date])
+    date_end = DateTime(data['D_Date'][end_date])
+    print(date_start)
+    print(date_end)
     portfolio_obj = PortfolioDescription.objects.create(
         name = request.POST.get('name'),
         currency = request.POST.get('currency'),
@@ -80,8 +94,8 @@ def create_portfolio(request, file_name, data, last_Period):
         market_value_pr = Decimal(request.POST.get('market_value')),
         file_name = file_name,
         period = data['last_Period'],
-        start_date = data['D_Date'][start_date],
-        end_date = data['D_Date'][end_date]
+        start_date = date_start,
+        end_date = date_end
         )
     last_obj = PortfolioDescription.objects.last()
     return last_obj

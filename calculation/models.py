@@ -12,8 +12,8 @@ class PortfolioDescription(models.Model):
     constituents_file_download = models.CharField(max_length=55)
     file_name =  models.FileField(upload_to='documents/')
     spin_off_treatment = models.CharField(max_length=55)
-    start_date = models.DateTimeField(auto_now=True)
-    end_date = models.DateTimeField(auto_now=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     index_value_pr =  models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
     market_value_pr =  models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
     divisor_pr =   models.DecimalField(max_digits=30, decimal_places=15, blank=True, null=True)
@@ -77,4 +77,26 @@ class TaxRate(models.Model):
         """Return str for object."""
         return '{id}'.format(
             id=self.pk
+        )
+
+
+class CurrencyCode(models.Model):
+    """Model to store event type info
+    """
+    country_name = models.CharField(blank=True, null=True, max_length=100)
+    currency = models.CharField(blank=True, null=True, max_length=100)
+    currency_code = models.CharField(blank=True, null=True, max_length=50)
+    currency_number = models.CharField(blank=True, null=True,  max_length=50)
+
+
+
+    class Meta:
+        db_table = 'currency_code'
+        verbose_name = _('Currency Code')
+        verbose_name_plural = _('Currency Code')
+
+    def __str__(self):
+        return '{id} <{country_name}>'.format(
+            id=self.pk,
+            country_name=self.country_name,
         )

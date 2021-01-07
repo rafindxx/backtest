@@ -1,7 +1,7 @@
 # bookstore/views.py
 
 from django.shortcuts import render
-from calculation.models import PortfolioDescription
+from calculation.models import PortfolioDescription, CurrencyCode
 from django.http import JsonResponse
 
 # look template in 'root folder'
@@ -9,7 +9,8 @@ from django.http import JsonResponse
 # But it is checked inside the 'app' folder
 def index(request):
     portfolio_list = PortfolioDescription.objects.all()
-    return render(request, 'index.html', {'all_objects': portfolio_list})
+    currency_list = CurrencyCode.objects.all().order_by('currency_code')
+    return render(request, 'index.html', {'all_objects': portfolio_list, 'currency_list': currency_list})
 
 
 

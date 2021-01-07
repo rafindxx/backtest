@@ -341,3 +341,8 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date)
     return save_file
 
+def DateTime(current_time):
+    print(current_time)
+    date_time = datetime.datetime.strptime(current_time, "%m/%d/%Y")
+    cr_date = date_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+    return cr_date

@@ -4,12 +4,6 @@ $(document).ready(function() {
             name:{
                 required: true
             },
-            index_vlaue:{
-                required: true
-            },
-            market_value:{
-                required: true
-            },
             protfolio_file:{
                required: true
             }
@@ -17,12 +11,6 @@ $(document).ready(function() {
         messages: {
             name:{
                required: 'Please add the portfolio name!'
-            } ,
-            index_vlaue:{
-               required: 'Please add the index value for portfolio!'
-            } ,
-            market_value:{
-               required: 'Please add the market value for portfolio!'
             } ,
             protfolio_file:{
                     required: "Please select input CSV file only"
@@ -96,6 +84,11 @@ var csrftoken = getCookie('csrftoken');
             if(response.error){
               $('.loader').css('display','none');
               $('.msg').html('<div class="alert alert-danger"><strong>Error!</strong>'+response.error+'</div>');
+              }else if (response.error_msg){
+                $('.loader').css('display','none');
+                $('.msg').html('<div class="alert alert-danger"><strong>Error!</strong>'+response.error_msg+'</div>');
+
+
             }else if(response.warning){
                $('.loader').css('display','none');
                $("#myModal").modal('show');

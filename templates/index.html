@@ -90,7 +90,7 @@
                            <div class="row">
                               <div class="col-lg-12 col-xs-12">
                                  <ol class="Notice" >
-                                    <li style="font-size:20px;list-style:none; font-weight:bold;">CSV file should be Period , ISIN , Weight, Start Date, End Date and Country format.</li>
+                                    <li style="font-size:20px;list-style:none; font-weight:bold;">CSV file should be Period , ISIN , Weight, Start Date, End Date, Country and RIC format.</li>
                                     <li style="font-size:20px;list-style:none; font-weight:bold;">System will treat weight as in % only.</li>
                                  </ol>
                                  <div class="contact-info pt-30">
@@ -151,7 +151,7 @@
                         <div class="col-6">
                            <h3 class="font-weight-bold my-4" style="text-align: center">Calculation</h3>
                            <!-- Section description -->
-                           <p class="font-weight-light mx-auto mb-4 pb-2">You Can Perfom Portfolio Generation  and  Rerun Saved Portfolio and Download report</p>
+                           <p class="font-weight-light mx-auto mb-4 pb-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You Can Perfom Portfolio Generation and Download report</p>
                         </div>
                      </div>
                      <form id="backtest-cal" class="backtest-cal" name="backtest-cal" action="#">
@@ -175,35 +175,9 @@
                                     <div class="input-group-text">Index Currency</div>
                                  </div>
                                  <select id="currency" name="currency" class="custom-select">
-                                    <option value="USD">USD</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="AUD">AUD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="BRL">BRL</option>
-                                    <option value="CAD">CAD</option>
-                                    <option value="CZK">CZK</option>
-                                    <option value="DKK">DKK</option>
-                                    <option value="HKD">HKD</option>
-                                    <option value="HUF">HUF</option>
-                                    <option value="INR">INR</option>
-                                    <option value="IDR">IDR</option>
-                                    <option value="IDR">ILS</option>
-                                    <option value="JPY">JPY</option>
-                                    <option value="MYR">MYR</option>
-                                    <option value="MXN">MXN</option>
-                                    <option value="NZD">NZD</option>
-                                    <option value="NOK">NOK</option>
-                                    <option value="PEN">PEN</option>
-                                    <option value="PEN">PHP</option>
-                                    <option value="PLN">PLN</option>
-                                    <option value="QAR">QAR</option>
-                                    <option value="QAR">RUB</option>
-                                    <option value="SGD">SGD</option>
-                                    <option value="ZAR">ZAR</option>
-                                    <option value="SEK">SEK</option>
-                                    <option value="CHF">CHF</option>
-                                    <option value="THB">THB</option>
-                                    <option value="TRY">TRY</option>
+                                 {% for currency in currency_list %}
+                                 <option value="{{ currency.currency_code }}">{{ currency.currency_code }}</option>
+                                 {% endfor %}
                                  </select>
                               </div>
                            </div>
@@ -225,7 +199,7 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend">
-                                    <div class="input-group-text">Spin-Off</div>
+                                    <div class="input-group-text">Spin-Off ADJ</div>
                                  </div>
                                  <select id="spin_off" name="spin_off" class="custom-select">
                                     <option value="DA">MARKETCAP ADJUSTMENT</option>
@@ -238,9 +212,9 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend">
-                                    <div class="input-group-text"> Index Value*</div>
+                                    <div class="input-group-text">Index Value</div>
                                  </div>
-                                 <input id="index_vlaue" name="index_vlaue" placeholder="Enter Index Value" type="text" class="form-control">
+                                 <input id="index_vlaue" name="index_vlaue" placeholder="Enter Index Value" type="text" value="1000" class="form-control">
                               </div>
                            </div>
                         </div>
@@ -248,9 +222,9 @@
                            <div class="col-6">
                               <div class="input-group">
                                  <div class="input-group-prepend">
-                                    <div class="input-group-text">Market Value*</div>
+                                    <div class="input-group-text">Market Value</div>
                                  </div>
-                                 <input id="market_value" name="market_value" placeholder="Enter Market Value" type="text" class="form-control">
+                                 <input id="market_value" name="market_value" placeholder="Enter Market Value" type="text" value="100000" class="form-control">
                               </div>
                            </div>
                         </div>
@@ -283,7 +257,7 @@
                                  <select id="download" name="downlaod" class="custom-select">
                                     <option value="ND">No Download</option>
                                     <option value="CD">Complete Download </option>
-                                    <option value="DED">Download For End Dates Of All Portfolios</option>
+                                    <option value="EDD">Download For End Dates Of All Portfolios</option>
                                  </select>
                               </div>
                            </div>

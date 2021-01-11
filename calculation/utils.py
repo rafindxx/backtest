@@ -17,6 +17,7 @@ def Validate_Read_CSV(file_Name,IDentifier):
     D_Data= {}
     D_Date = {}
     D_ISIN = {}
+    D_RIC_ISIN = {}
     last_Period = 1
     errorMessage = ""
     warningMessage = ""
@@ -53,24 +54,46 @@ def Validate_Read_CSV(file_Name,IDentifier):
         #yesterday = datetime.datetime.now()+ datetime.timedelta(days=17)
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
-        # print(yesterday_date)
+        print(yesterday_date)
 
         format_str = '%m/%d/%Y'
         S_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
 
-        # print(S_Date.strftime("%x"))
+        print(S_Date.strftime("%x"))
         if yesterday_date == S_Date.strftime("%x"):
-            # print("RIC CHECKING")
-            # print(last_Period)
+            print("RIC CHECKING")
+            print(last_Period)
             for line in D_Data[last_Period]:
                 if line[6] in (None, "") :
                     return "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
+                else:
+                     D_RIC_ISIN[line[6]]=line[1]
 
         if errorMessage not in (None, ""):
             errorMessage = "Please check your portfolio."+errorMessage
 
-    final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period}
+    #print(last_Period)
+    final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
     return final_data
+
+def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
+    yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
+    yesterday_date = yesterday.strftime("%x")
+    print(yesterday_date)
+
+    format_str = '%m/%d/%Y'
+    E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
+    E_Date = E_Date.strftime("%x")
+    if yesterday_date == E_Date:
+        print("TR Price Update")
+        TR_Price = Get_TR_PRICE(getList(D_RIC_ISIN),E_Date)
+        for ric in D_RIC_ISIN:
+            var1 = ric+'_'+date
+            var2 = D_RIC_ISIN[ric]+'_'+date
+            if var1 in TR_Price:
+                trPrice = TR_Price[var1]
+                if var2 not in D_Price:
+                    D_Price[var2] = trPrice
 
 def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
     period = str(line[0])
@@ -95,7 +118,7 @@ def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
             d2[period] = weight
 
 def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
-    #print("inside Delisting_Check")
+    print("inside Delisting_Check")
     #date_str = '29/12/2017' # The date - 29 Dec 2017
     isins = str(ISIN_LIST)[1:-1]
     delistedISINs=""
@@ -126,7 +149,7 @@ def Get_TAX():
     return dir
 
 def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
-    #print("inside Get_CA")
+    print("inside Get_CA")
     isins = str(ISIN_LIST)[1:-1]
     D_CA ={}
     D_CA_Dividend = {}
@@ -144,7 +167,7 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     Query= Q.Query_Split(IDentifier,isins,S_DATE,E_DATE)
     cur.execute(Query)
     for row in cur:
-        #print(row)
+        print(row)
         var = row[0]+'_'+row[1].strftime("%x")
         if var not in D_CA_Split:
             D_CA_Split[var] = list()
@@ -154,7 +177,7 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     return D_CA
 
 def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
-    #print("inside get price")
+    print("inside get price")
     isins = str(ISIN_LIST)[1:-1]
 
     '''format_str = '%m/%d/%Y'
@@ -180,33 +203,24 @@ def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     return D_Price,D_LastDate,currency_list,D_ISIN_Currency
 
 def Get_TR_PRICE(RIC_LIST,DATE):
+    connection = ms.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
+    cursor = connection.cursor()
     print("inside get price")
-    isins = str(RIC_LIST)[1:-1]
+    rics = str(RIC_LIST)[1:-1]
 
     '''format_str = '%m/%d/%Y'
     datetime_obj = datetime.datetime.strptime(S_DATE, format_str)
     START_DATE = str(datetime_obj.date()- datetime.timedelta(days=5))'''
     #Query= "select  b.isin,a.p_date as date,a.p_price,a.currency from fp_v2.fp_basic_prices a inner join sym_v1.sym_coverage c on a.fsym_id=c.fsym_regional_id inner join sym_v1.sym_isin b on c.fsym_id=b.fsym_id WHERE b.isin in  ("+isins +")AND  a.p_date between '"+START_DATE+"' and '"+E_DATE+"' ORDER BY b.isin, a.p_date asc"
-    Query= Q.Query_Price(IDentifier,isins,S_DATE,E_DATE)
-    currency_list = []
-    cur.execute(Query)
-    D_Price = {}
-    D_ISIN_Currency ={}
-    D_LastDate = {}
-    for row in cur:
+    Query= Q.Query_TR_Price(RIC_LIST,DATE)
+    cursor.execute(Query)
+    D_TR_Price = {}
+    for row in cursor:
         #print(row)
-        D_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
-        D_ISIN_Currency[row[0]] = row[3]
-        D_LastDate[row[0]] = row[1].strftime("%x")
-        if row[3] not in currency_list:
-            currency_list.append(row[3])
-        #print(currency_list)
-    #currency_list.append(Index_Currency)
-    #ex_Rate = Get_Currency(cursor1,currency_list,S_DATE,E_Date)
-    return D_Price,D_LastDate,currency_list,D_ISIN_Currency
-
-
-
+        D_TR_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
+    cursor.close()
+    connection.close()
+    return D_TR_Price
 
 def Get_Currency(C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
@@ -214,7 +228,7 @@ def Get_Currency(C_list,S_DATE,E_DATE):
     #datetime_obj = datetime.datetime.strptime(S_DATE, format_str)
     #START_DATE = str(datetime_obj.date()- datetime.timedelta(days=5))
     Query="SELECT RTS.iso_currency, RTS.date, RTS.exch_rate_usd, RTS.exch_rate_per_usd FROM FDS_DataFeeds.ref_v2.fx_rates_usd AS RTS WHERE RTS.date between '"+S_DATE+"' and '"+E_DATE+"' and RTS.iso_currency in ("+clist +") ORDER BY RTS.date"
-    #print("Currency Query : "+Query)
+    print("Currency Query : "+Query)
     cur.execute(Query)
     dir = {}
     for row in cur:
@@ -222,27 +236,10 @@ def Get_Currency(C_list,S_DATE,E_DATE):
     return dir
 
 
-def GetFlag(option,date,date_end):
-    if option =="ND":
-        return 0
-    elif option =="CD":
-        return 1
-    elif option =="EDD":
-        #endDate = date_end.strftime("%x")
-        format_str = '%m/%d/%Y'
-        endDate = datetime.datetime.strptime(date_end, format_str).date()
-
-        #print(endDate.strftime("%x"))
-        #print(endDate.strftime("%x") +"VS"+date)
-        if endDate.strftime("%x") ==date:
-            #print(endDate.strftime("%x") +"VS"+date)
-            return 1
-        else :
-            return 0
-
-
-def Cal_Index(D_Index,D_Data,D_ISIN,D_Date):
+def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
+    print(D_Index)
     Index_List = list()
+    print("inside cal_Index")
     Constituents_List = list()
     for period in D_Data:
         #print("inside cal_Index")
@@ -260,10 +257,12 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date):
         D_Index["Divisor_PR"], D_Index["Divisor_TR"],D_Index["Divisor_NTR"]=Divisor,Divisor,Divisor
 
         D_Price,D_LastDate,currency_list,D_ISIN_Currency = Get_PRICE(D_ISIN[period],S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
+        Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price)
         currency_list.append(Index_Currency)
         Ex_Rate = Get_Currency(currency_list,S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"))
         Tax_Rate = Get_TAX()
         D_CA = Get_CA(D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
+        print(D_CA)
 
         Latest_Price={}
         Latest_Ex_Rate={}
@@ -287,12 +286,34 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date):
                 S_Date_Minus_Five = S_Date_Minus_Five + datetime.timedelta(days=3)
             else:
                 S_Date_Minus_Five = S_Date_Minus_Five + datetime.timedelta(days=1)
+
+            print(S_Date_Minus_Five)
+            print(S_Date)
             if S_Date_Minus_Five>S_Date and i!=0:
                 f_c.Delist(D_Data[period],S_Date_Minus_Five.strftime("%x"),D_LastDate)
                 f_c.Cal_Index_Open(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),Tax_Rate,D_ISIN_Currency,Ex_Rate,D_CA)
             #    f_c.Adjust_CA(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),D_ISIN_Currency,D_CA,Ex_Rate)
     files = f_c.Print_Reports(Index_List,Constituents_List)
     return files
+
+
+def GetFlag(option,date,date_end):
+    if option =="ND":
+        return 0
+    elif option =="CD":
+        return 1
+    elif option =="EDD":
+        #endDate = date_end.strftime("%x")
+        format_str = '%m/%d/%Y'
+        endDate = datetime.datetime.strptime(date_end, format_str).date()
+
+        #print(endDate.strftime("%x"))
+        print(endDate.strftime("%x") +"VS"+date)
+        if endDate.strftime("%x") ==date:
+            print(endDate.strftime("%x") +"VS"+date)
+            return 1
+        else :
+            return 0
 
 
 def handle_uploaded_file(file):
@@ -323,7 +344,7 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     D_Date[st_date] =start_date
     D_Date[en_date] =end_date
     for data_composition in get_composition:
-        weights = float(data_composition.weights)
+        weights = data_composition.weights
         weights = str(weights)+'%'
         comp_data = []
         comp_isin =[]

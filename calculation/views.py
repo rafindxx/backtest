@@ -29,7 +29,9 @@ class PortfolioView(View):
             tax_file = request.FILES.get('tax_rate')
             currency = request.POST.get('currency')
             csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
+            print
             last_Period = csv_data['last_Period']
+            D_RIC_ISIN = csv_data['D_RIC_ISIN']
             index_vlaue = request.POST.get('index_vlaue')
             market_value = request.POST.get('market_value')
             if market_value==0 or index_vlaue==0:
@@ -62,7 +64,7 @@ class PortfolioView(View):
                     D_Index["Currency"] = currency
                     D_Index["Adjustment"] = request.POST.get('spin_off')
                     D_Index["DCFO"] = request.POST.get('download')
-                    save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'])
+                    save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'], D_RIC_ISIN, last_Period)
                     data = {
                         'status': True,
                         'success': 'Portfolio and composition is created successfully!',

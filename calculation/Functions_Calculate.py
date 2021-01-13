@@ -34,7 +34,6 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             Spin = div_code
 
         exRate = Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date)
-        print("EX Rate ::::" + str(exRate))
         amount = row[1]
         amount_Tax = amount*(1-countryTax)
         if div_code in (11,134):
@@ -50,9 +49,6 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
         aFactor_PR =  aFactor_PR*(1 - (amount_PR/Latest_Price[isin][0]))
         aFactor_TR =  aFactor_TR*(1 - (amount_TR/Latest_Price[isin][0]))
         aFactor_NTR =  aFactor_NTR*(1 - (amount_NTR/Latest_Price[isin][0]))
-        print(aFactor_PR)
-        print(aFactor_TR)
-        print(aFactor_NTR)
     return aFactor_PR,aFactor_TR,aFactor_NTR,Dividend,sDividend,Spin
 
 def Adjust_Split(splitList):
@@ -69,7 +65,6 @@ def Adjust_CA(D_Index,D_CA,isin_Data_Row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,L
     sFactorPR,sFactorTR,sFactorNTR = 1,1,1
     Dividend,sDividend,Spin,Split = 0,0,0,0
     var = isin_Data_Row[1]+'_'+date
-    print("CA DAte::::"+ var)
     dFactorPR,dFactorTR,dFactorNTR = 1,1,1
     sFactorPR,sFactorTR,sFactorNTR = 1,1,1
     if var in D_CA["Dividend"]:
@@ -92,15 +87,11 @@ def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISI
     Dividend,sDividend,Spin,Split = 0,0,0,0
     Index_Value_PR,Index_Value_TR,Index_Value_NTR = D_Index["Index_Value_PR"],D_Index["Index_Value_TR"],D_Index["Index_Value_NTR"]
     for row in Clist:
-        print(row)
         adjustmentFactor_PR,adjustmentFactor_TR,adjustmentFactor_NTR,Dividend,sDividend,Spin,Split =Adjust_CA(D_Index,D_CA,row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,Latest_Price)
 
         Adjusted_Price_PR = Latest_Price[row[1]][0]*adjustmentFactor_PR
         Adjusted_Price_TR = Latest_Price[row[1]][0]*adjustmentFactor_TR
         Adjusted_Price_NTR = Latest_Price[row[1]][0]*adjustmentFactor_NTR
-        print(date)
-        print("Base Price::::::"+str(Latest_Price[row[1]][0]))
-        print("Adj_Price::::::"+str(Adjusted_Price_PR)+"---"+str(Adjusted_Price_TR)+"----"+str(Adjusted_Price_NTR))
         if D_Index["Adjustment"] =="SA":
             shares_PR = row[7]/adjustmentFactor_PR
             shares_TR = row[8]/adjustmentFactor_TR
@@ -178,12 +169,6 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
     Constituents_List_Final.extend(Constituents_List)
 
 def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,period,Tax_Rate,D_ISIN_Currency):
-    print("inside calshares"+ date)
-    #ISIN,Currency,Country,TAX,Share PR,Share TR,Share NTR,Local Price,USD PRICE,MCAP PR,MCAP TR,MCAP NTR,Currency Price,Price Date,Weight PR,Weight TR,Weight NTR,Dividend,Special Dividend,Split,Spin
-
-    #print(Latest_Price)
-    #print(Latest_Ex_Rate)
-    #print(D_Price)
     M_Cap = D_Index["MV"]
     ISIN_Shares = {}
     for row in list:
@@ -261,7 +246,6 @@ def Fill_Index_Report_Data(D_Index,Index_List,period,S_Date):
    Index_List.append(row)
 
 def Set_Latest_Price(list,D_Price,Latest_Price,date):
-    print("inside Latest Price" + date)
     for row in list:
         var1 = row[1]+'_'+date
 
@@ -272,7 +256,6 @@ def Set_Latest_Price(list,D_Price,Latest_Price,date):
             Row.append(date)
             Latest_Price[row[1]] = Row
 def Get_Price(ISIN,D_Price,date,Latest_Price):
-    print("inside Get_Price" + date)
     var1 = ISIN+'_'+date
 
     if var1 in D_Price:
@@ -282,9 +265,7 @@ def Get_Price(ISIN,D_Price,date,Latest_Price):
         return Latest_Price[ISIN][0]
 
 def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
-    print("inside Get_Ex_Rate" + date)
     var1 = fromCurrency +'_'+date
-    print(var1)
     if var1 in Ex_Rate:
         fromRate = (Ex_Rate[var1])
         if toCurrency =="USD":
@@ -292,13 +273,11 @@ def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
         else:
             toRate = (Ex_Rate[toCurrency+'_'+date])
         ex_Rate = toRate/fromRate
-        print(ex_Rate)
         return ex_Rate
     else:
         return 1
 
 def Set_Latest_Ex_Rate(Index_Currency,list,Ex_Rate,Latest_Ex_Rate,date,D_ISIN_Currency):
-    print("inside Set_Latest_Ex_Rate" + date)
     #print(Ex_Rate)
     for row in list:
 

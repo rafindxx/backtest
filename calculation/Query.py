@@ -26,3 +26,8 @@ def Query_TR_Price(LIST,Date):
 #with cte  AS ( select distinct File_code,columnname, colvalue,Quote_ID,RIC,Trade_date from (select * from EQU_Price ) src unpivot (colvalue for columnname in ( offi_close_price,last_trade_price,p_close_price,bid_price,ask_price,alt_close_price,open_price,high_price,low_price,mid_price)) AS pvt WHERE Quote_ID IN( SELECT quote_id FROM TR_Equity WHERE ric in ('600085.SS','600556.SS','4113.TWO') AND valid_flag=1) AND Trade_Date ='2021-01-06' and Valid_flag=1) select c.Quote_ID,c.RIC,c.Trade_Date,c.colvalue AS price from tabl t join cte c on t.Code=c.File_code AND t.Column_ref=c.columnname
     Query="with cte  AS ( select distinct File_code,columnname, colvalue,Quote_ID,RIC,Trade_date from (select * from EQU_Price ) src unpivot (colvalue for columnname in ( offi_close_price,last_trade_price,p_close_price,bid_price,ask_price,alt_close_price,open_price,high_price,low_price,mid_price)) AS pvt WHERE Quote_ID IN( SELECT quote_id FROM TR_Equity WHERE ric in ("+LIST +") AND valid_flag=1) AND Trade_Date ='"+Date+"' and Valid_flag=1) select c.Quote_ID,c.RIC,c.Trade_Date,c.colvalue AS price from tabl t join cte c on t.Code=c.File_code AND t.Column_ref=c.columnname"
     return Query;
+
+def Query_TR_Equity(LIST):
+    Query ="SELECT ric,quote_id FROM TR_Equity WHERE ric in ("+LIST +") AND valid_flag=1"
+    print(Query)
+    return Query;

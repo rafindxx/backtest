@@ -59,6 +59,12 @@ var csrftoken = getCookie('csrftoken');
          var market_value = $("#market_value").val();
          var download = $("#download").val();
          var confirmbox = $("#confirmbox").val();
+         var save_portfolio = $('#sav_data').val();
+         if ($('#sav_data').is(":checked")){
+          var save_data ='yes';
+          fd.append('save_data', save_data);
+         }
+         console.log(sav_data)
          fd.append('name', name);
          fd.append('currency', currency);
          fd.append('identifier', identifier);

@@ -12,7 +12,7 @@ import pandas as pd
 conn1 = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
 cur = conn1.cursor()
 
-def Validate_Read_CSV(file_Name,IDentifier):
+def Validate_Read_CSV(file_Name,cur,IDentifier):
     d1 = {}
     d2 = {}
     D_Data= {}
@@ -38,73 +38,88 @@ def Validate_Read_CSV(file_Name,IDentifier):
                 store_end_date = line[4]
             '''Check for Mandatory Fields'''
             if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
-                return "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period
-            else:
+                return "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+            else:                
+                startDate= line[3]
+                endDate  = line[4]
                 period = line[0]
                 last_Period = period
-                Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
-        '''Check for Total sum of weights'''
+                if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
+                    return "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                else:                    
+                    Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
+        '''Check for Total sum of weights'''                        
         for key in d1:
             #print(d1[key])
             if d1[key]>100.44 or d1[key]<99.50:
                 errorMessage += "Total weight of period " + key +" is " + str(d1[key])+"."
-        '''Check for Delisted Securities'''
+        '''Check for Delisted Securities'''                        
         for key in D_ISIN:
             isins=D_ISIN[key]
             startDate = D_Date[key+'_'+'START']
-            delistedISINs = Delisting_Check(isins,startDate,IDentifier)
+            delistedISINs = Delisting_Check(cur,isins,startDate,IDentifier)
             if delistedISINs not in (None, ""):
                 errorMessage += "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
         '''Check for Warning '''
         for key in d2:
              if d2[key]>45:
                  warningMessage +="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
-        yesterday = datetime.datetime.now()- datetime.timedelta(days=0)
+        yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
+        print(yesterday_date)
 
         format_str = '%m/%d/%Y'
         S_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
-
+        
+        print(S_Date.strftime("%x"))
         if yesterday_date == S_Date.strftime("%x"):
+            print("RIC CHECKING")
+            print(last_Period)
             for line in D_Data[last_Period]:
                 if line[6] in (None, "") :
                     return "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
                 else:
                      D_RIC_ISIN[line[6]]=line[1]
-
+                    
         if errorMessage not in (None, ""):
             errorMessage = "Please check your portfolio."+errorMessage
         if D_RIC_ISIN:
             ric_error = check_ric(getList(D_RIC_ISIN))
             errorMessage = ric_error
-    final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
-    return final_data
+        
+    #print(last_Period)                
+    return errorMessage,warningMessage,D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
 
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
     yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
     yesterday_date = yesterday.strftime("%x")
+    print(yesterday_date)
 
     format_str = '%m/%d/%Y'
     E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
     E_Date = E_Date.strftime("%x")
     if yesterday_date == E_Date:
+        print("TR Price Update")
         TR_Price = Get_TR_PRICE(getList(D_RIC_ISIN),E_Date)
         for ric in D_RIC_ISIN:
             var1 = ric+'_'+date
-            var2 = D_RIC_ISIN[ric]+'_'+date
-            if var1 in TR_Price:
+            var2 = D_RIC_ISIN[ric]+'_'+date        
+            if var1 in TR_Price:            
                 trPrice = TR_Price[var1]
                 if var2 not in D_Price:
                     D_Price[var2] = trPrice
-
-def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
+        
+def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):   
     period = str(line[0])
     weight = float(line[2][0:-1])
     if period+'_START' not in D_Date:
         D_Date[period+'_START'] = line[3]
-    D_Date[period+'_END'] = line[4]
+    if period+'_END' not in D_Date:
+        D_Date[period+'_END'] = line[4]
     if period not in D_Data:
         D_Data[period] = list()
+    if len(line) == 6:
+        line.append('')
     D_Data[period].append(line)
     if period not in D_ISIN:
         D_ISIN[period] = list()
@@ -118,8 +133,8 @@ def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
             d2[period] += weight
         else:
             d2[period] = weight
-
-def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
+    
+def Delisting_Check(cur,ISIN_LIST,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     delistedISINs=""
     format_str = '%m/%d/%Y' # The format
@@ -137,14 +152,14 @@ def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
             delistedISINs += ISIN +","
     return delistedISINs
 
-def Get_TAX():
+def Get_TAX(cur):   
     cur.execute('SELECT * from FDS_DataFeeds.dbo.tax_rate ')
     dir = {}
     for row in cur:
         dir[row[1]] = float(row[2].strip()[0:-1])# row[2].strip()
     return dir
 
-def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
+def Get_CA(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     D_CA ={}
     D_CA_Dividend = {}
@@ -158,20 +173,19 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
             D_CA_Dividend[var] = list()
         D_CA_Dividend[var].append(row)
     D_CA["Dividend"] = D_CA_Dividend
-
+    
     Query= Q.Query_Split(IDentifier,isins,S_DATE,E_DATE)
     cur.execute(Query)
     for row in cur:
-        print(row)
         var = row[0]+'_'+row[1].strftime("%x")
         if var not in D_CA_Split:
             D_CA_Split[var] = list()
         D_CA_Split[var].append(row)
     D_CA["Split"] = D_CA_Split
-
+    
     return D_CA
-
-def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
+        
+def Get_PRICE(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     Query= Q.Query_Price(IDentifier,isins,S_DATE,E_DATE)
     currency_list = []
@@ -184,7 +198,7 @@ def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
         D_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
         D_ISIN_Currency[row[0]] = row[3]
         D_LastDate[row[0]] = row[1].strftime("%x")
-        if row[3] not in currency_list:
+        if row[3] not in currency_list: 
             currency_list.append(row[3])
     return D_Price,D_LastDate,currency_list,D_ISIN_Currency
 
@@ -196,23 +210,25 @@ def Get_TR_PRICE(RIC_LIST,DATE):
     cursor.execute(Query)
     D_TR_Price = {}
     for row in cursor:
+        #print(row)
         D_TR_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
     cursor.close()
     connection.close()
     return D_TR_Price
 
-def Get_Currency(C_list,S_DATE,E_DATE):
+def Get_Currency(cur,C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
     Query="SELECT RTS.iso_currency, RTS.date, RTS.exch_rate_usd, RTS.exch_rate_per_usd FROM FDS_DataFeeds.ref_v2.fx_rates_usd AS RTS WHERE RTS.date between '"+S_DATE+"' and '"+E_DATE+"' and RTS.iso_currency in ("+clist +") ORDER BY RTS.date"
+    print("Currency Query : "+Query)
     cur.execute(Query)
     dir = {}
     for row in cur:
         dir[row[0]+'_'+row[1].strftime("%x")] = (row[3])
+        dir['USD_'+row[1].strftime("%x")] = 1
     return dir
 
 
 def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
-    print(D_Index)
     Index_List = list()
     Constituents_List = list()
     for period in D_Data:

@@ -29,5 +29,4 @@ def Query_TR_Price(LIST,Date):
 
 def Query_TR_Equity(LIST):
     Query ="SELECT ric,quote_id FROM TR_Equity WHERE ric in ("+LIST +") AND valid_flag=1"
-    print(Query)
     return Query;

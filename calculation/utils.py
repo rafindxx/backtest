@@ -12,7 +12,7 @@ import pandas as pd
 conn1 = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
 cur = conn1.cursor()
 
-def Validate_Read_CSV(file_Name,cur,IDentifier):
+def Validate_Read_CSV(file_Name, IDentifier):
     d1 = {}
     d2 = {}
     D_Data= {}
@@ -57,7 +57,7 @@ def Validate_Read_CSV(file_Name,cur,IDentifier):
         for key in D_ISIN:
             isins=D_ISIN[key]
             startDate = D_Date[key+'_'+'START']
-            delistedISINs = Delisting_Check(cur,isins,startDate,IDentifier)
+            delistedISINs = Delisting_Check(isins,startDate,IDentifier)
             if delistedISINs not in (None, ""):
                 errorMessage += "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
         '''Check for Warning '''
@@ -87,8 +87,8 @@ def Validate_Read_CSV(file_Name,cur,IDentifier):
             ric_error = check_ric(getList(D_RIC_ISIN))
             errorMessage = ric_error
         
-    #print(last_Period)                
-    return errorMessage,warningMessage,D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+    final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
+    return final_data
 
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
     yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
@@ -134,7 +134,7 @@ def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
         else:
             d2[period] = weight
     
-def Delisting_Check(cur,ISIN_LIST,E_DATE,IDentifier):
+def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     delistedISINs=""
     format_str = '%m/%d/%Y' # The format
@@ -152,14 +152,14 @@ def Delisting_Check(cur,ISIN_LIST,E_DATE,IDentifier):
             delistedISINs += ISIN +","
     return delistedISINs
 
-def Get_TAX(cur):   
+def Get_TAX():   
     cur.execute('SELECT * from FDS_DataFeeds.dbo.tax_rate ')
     dir = {}
     for row in cur:
         dir[row[1]] = float(row[2].strip()[0:-1])# row[2].strip()
     return dir
 
-def Get_CA(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
+def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     D_CA ={}
     D_CA_Dividend = {}
@@ -185,7 +185,7 @@ def Get_CA(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
     
     return D_CA
         
-def Get_PRICE(cur,ISIN_LIST,S_DATE,E_DATE,IDentifier):
+def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
     Query= Q.Query_Price(IDentifier,isins,S_DATE,E_DATE)
     currency_list = []
@@ -216,7 +216,7 @@ def Get_TR_PRICE(RIC_LIST,DATE):
     connection.close()
     return D_TR_Price
 
-def Get_Currency(cur,C_list,S_DATE,E_DATE):
+def Get_Currency(C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
     Query="SELECT RTS.iso_currency, RTS.date, RTS.exch_rate_usd, RTS.exch_rate_per_usd FROM FDS_DataFeeds.ref_v2.fx_rates_usd AS RTS WHERE RTS.date between '"+S_DATE+"' and '"+E_DATE+"' and RTS.iso_currency in ("+clist +") ORDER BY RTS.date"
     print("Currency Query : "+Query)
@@ -347,7 +347,6 @@ def DateTime(current_time):
     return cr_date
 
 def check_ric(ric_data):
-    print(ric_data)
     ric_active_data= {}
     connection = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=3.7.99.191;DATABASE=TR_Datafeeds;UID=sa;PWD=Indxx@1234')
     cursor = connection.cursor()

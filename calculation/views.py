@@ -30,6 +30,7 @@ class PortfolioView(View):
             currency = request.POST.get('currency')
             save_data = request.POST.get('save_data')
             csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
+            print(csv_data)
             last_Period = csv_data['last_Period']
             D_RIC_ISIN = csv_data['D_RIC_ISIN']
             index_vlaue = request.POST.get('index_vlaue')
@@ -81,8 +82,6 @@ def create_portfolio(request, file_name, data, last_Period):
     end_date = last_Period+'_END'
     date_start = DateTime(data['D_Date'][start_date])
     date_end = DateTime(data['D_Date'][end_date])
-    print(date_start)
-    print(date_end)
     portfolio_obj = PortfolioDescription.objects.create(
         name = request.POST.get('name'),
         currency = request.POST.get('currency'),

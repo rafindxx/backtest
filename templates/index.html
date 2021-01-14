@@ -162,7 +162,7 @@
                               <div class="input-group">
                                  <div class="input-group-prepend w-100">
                                     <div class="input-group-text"> Portfolio Name*</div>
-<input id="name" name="name" placeholder="Enter Portfolio Name" type="text" class="form-control">
+<input id="name" name="name" placeholder="Enter Portfolio Name" type="text" class="form-control"><label for="name" class="error name-error"></label>
                                  </div>
 
                               </div>
@@ -176,7 +176,11 @@
                                  </div>
                                  <select id="currency" name="currency" class="custom-select">
                                  {% for currency in currency_list %}
+                                 {% ifequal currency.currency_code "USD" %}
+                                 <option selected="selected" value="{{ currency.currency_code }}">{{ currency.currency_code }}</option>
+                                 {% else %}
                                  <option value="{{ currency.currency_code }}">{{ currency.currency_code }}</option>
+                                 {% endifequal %}
                                  {% endfor %}
                                  </select>
                               </div>

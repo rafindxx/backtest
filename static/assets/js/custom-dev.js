@@ -1,17 +1,11 @@
 $(document).ready(function() {
     $("#backtest-cal").validate({
         rules: {
-            name:{
-                required: true
-            },
             protfolio_file:{
                required: true
             }
         },
         messages: {
-            name:{
-               required: 'Please add the portfolio name!'
-            } ,
             protfolio_file:{
                     required: "Please select input CSV file only"
             } ,
@@ -40,6 +34,15 @@ function getCookie(name) {
 }
 var csrftoken = getCookie('csrftoken');
  $("#backtest-cal").on('submit', function(e){
+  if ($('#sav_data').is(":checked")){
+    var name_value = document.forms["backtest-cal"]["name"].value;
+    if (name_value == "") {
+       $('.name-error').html('Please add porfolio name! ')
+       return false;
+  }
+         }
+  var formStatus = $('#backtest-cal').validate().form();
+      if(true == formStatus){
       e.preventDefault();
          $("#myModal").modal('hide');
          var fd = new FormData();
@@ -115,6 +118,7 @@ var csrftoken = getCookie('csrftoken');
 
          }
       });
+       }
    });
 //===================ajax call for genrate existing portfolio=======//
 $("#portfolio_id").change(function() {

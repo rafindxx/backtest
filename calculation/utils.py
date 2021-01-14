@@ -44,40 +44,41 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 endDate  = line[4]
                 period = line[0]
                 last_Period = period
+                if '-' in startDate:
+                    startDate = check_date_formate(startDate)
+                if '-' in endDate:
+                    endDate = check_date_formate(endDate)
                 if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
-                    return "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                    errorMessage = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
                 else:                    
                     Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
+
         '''Check for Total sum of weights'''                        
         for key in d1:
             #print(d1[key])
             if d1[key]>100.44 or d1[key]<99.50:
-                errorMessage += "Total weight of period " + key +" is " + str(d1[key])+"."
+                errorMessage = "Total weight of period " + key +" is " + str(d1[key])+"."
         '''Check for Delisted Securities'''                        
         for key in D_ISIN:
             isins=D_ISIN[key]
             startDate = D_Date[key+'_'+'START']
             delistedISINs = Delisting_Check(isins,startDate,IDentifier)
             if delistedISINs not in (None, ""):
-                errorMessage += "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
+                errorMessage = "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
         '''Check for Warning '''
         for key in d2:
              if d2[key]>45:
-                 warningMessage +="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
+                 warningMessage ="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
-        print(yesterday_date)
-
+        if '-' in D_Date[last_Period+'_END']:
+            d_date_last_period = check_date_formate(D_Date[last_Period+'_END'])
         format_str = '%m/%d/%Y'
-        S_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
-        
-        print(S_Date.strftime("%x"))
+        S_Date = datetime.datetime.strptime(d_date_last_period, format_str).date()
         if yesterday_date == S_Date.strftime("%x"):
-            print("RIC CHECKING")
-            print(last_Period)
             for line in D_Data[last_Period]:
                 if line[6] in (None, "") :
-                    return "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
+                    errorMessage =  "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
                 else:
                      D_RIC_ISIN[line[6]]=line[1]
                     
@@ -93,8 +94,6 @@ def Validate_Read_CSV(file_Name, IDentifier):
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
     yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
     yesterday_date = yesterday.strftime("%x")
-    print(yesterday_date)
-
     format_str = '%m/%d/%Y'
     E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
     E_Date = E_Date.strftime("%x")
@@ -135,6 +134,8 @@ def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
             d2[period] = weight
     
 def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
+    if '-' in E_DATE:
+        E_DATE = check_date_formate(E_DATE)
     isins = str(ISIN_LIST)[1:-1]
     delistedISINs=""
     format_str = '%m/%d/%Y' # The format
@@ -367,3 +368,8 @@ def getList(dict):
     str1 = "', '".join(list_keys)
     str1 = "'"+str1+"'"
     return str1
+
+def check_date_formate(date):
+    date = date.split('-')
+    date = date[0] +'/'+date[1]+'/'+date[2]
+    return date

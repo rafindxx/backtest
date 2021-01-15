@@ -73,6 +73,8 @@ def Validate_Read_CSV(file_Name, IDentifier):
         yesterday_date = yesterday.strftime("%x")
         if '-' in D_Date[last_Period+'_END']:
             d_date_last_period = check_date_formate(D_Date[last_Period+'_END'])
+        else:
+            d_date_last_period = D_Date[last_Period+'_END']
         format_str = '%m/%d/%Y'
         S_Date = datetime.datetime.strptime(d_date_last_period, format_str).date()
         if yesterday_date == S_Date.strftime("%x"):

@@ -31,7 +31,8 @@ function getCookie(name) {
         }
     }
     return cookieValue;
-}
+} 
+//=== ajax cal for  backtest calculatio=====//
 var csrftoken = getCookie('csrftoken');
  $("#backtest-cal").on('submit', function(e){
   if ($('#sav_data').is(":checked")){

@@ -276,7 +276,7 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
                 S_Date_Minus_Five = S_Date_Minus_Five + datetime.timedelta(days=1)
 
             if S_Date_Minus_Five>S_Date and i!=0:
-                f_c.Delist(D_Data[period],S_Date_Minus_Five.strftime("%x"),D_LastDate)
+                f_c.Delist(D_Data[period],S_Date_Minus_Five.strftime("%x"),D_LastDate,E_Date.strftime("%x"))
                 f_c.Cal_Index_Open(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),Tax_Rate,D_ISIN_Currency,Ex_Rate,D_CA)
             #    f_c.Adjust_CA(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),D_ISIN_Currency,D_CA,Ex_Rate)
     files = f_c.Print_Reports(Index_List,Constituents_List)

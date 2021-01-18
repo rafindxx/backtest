@@ -113,14 +113,17 @@
                                              <div class="contact-info-content media-body">
                                                 <a id="download2"  href="{% static '/backtest-file/sample/Withholding-Tax-Rates.csv' %}" style="FONT-WEIGHT: 1000; font-size: 15px;">Download Tax Rate Input File </a>
                                              </div>
+
                                           </div>
-                                       </div>
+                                       </div><br/>
+
                                     </div>
                                  </div>
                               </div>
                            </div>
                            <br/>
                         </div>
+
                         <!-- header hero content -->
                      </div>
                   </div>
@@ -131,14 +134,23 @@
                   <div class="image">
                      <img src="{% static 'assets/images/hero-image.png' %}" alt="Hero Image">
                   </div>
+
                </div>
                <!-- header hero image -->
+
             </div>
             <!-- header hero -->
+            <div class="col-lg-12 col-md-6">
+            <div class="single-contact-info contact-color-3 mt-30 d-flex  wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.9s">
+               <a href="calculation/tax_rate">
+            <button type="button" class="btn btn-primary" style="margin-left: 550px;">Current Tax Rate <i class="fa fa-percent" aria-hidden="true"></i></button></a>
+                                       </div></div>
          </header>
       </div>
       <!--====== HEADER PART ENDS ======-->
+
       <div class="container my-5">
+
          <div class="tabs">
             <div class="tab-2">
                <label for="tab2-1">Back Test Calculations</label>
@@ -156,6 +168,14 @@
                      </div>
                      <form id="backtest-cal" class="backtest-cal" name="backtest-cal" action="#">
                         <div class="msg"></div>
+                        <div class="form-group row justify-content-center">
+                           <div class="col-6">
+                           <div class="input-group" style="margin-left:20px;">
+                                <input type="checkbox" class="form-check-input" id="sav_data">
+                                <spn style="margin-left: 5px; color: #000;">Do You Want To Save This Portfolio?
+                              </div>
+                           </div>
+                        </div>
                         <input id="confirmbox" name="confirmbox" value="" type="hidden">
                         <div class="form-group row justify-content-center">
                            <div class="col-6">
@@ -267,14 +287,7 @@
                               </div>
                            </div>
                         </div>
-                        <div class="form-group row justify-content-center">
-                           <div class="col-6">
-                           <div class="input-group" style="margin-left:20px;">
-                                <input type="checkbox" class="form-check-input" id="sav_data">
-                                <spn style="margin-left: 10px; color: #000;">Do You Want To Save This Portfolio?
-                              </div>
-                           </div>
-                        </div>
+
                         <div class="form-group row">
                            <div class="col-6">
                               <div class="input-group">
@@ -284,9 +297,7 @@
                               </div>
                            </div>
                         </div>
-
                      </form>
-
                   </div>
                    <div class="col-12 justify-content-center downlaod" style="display:none">
                         <div class="alert alert-success"></div>

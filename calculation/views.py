@@ -175,3 +175,27 @@ class RerunPortfolio(View):
                 'error': 'Portfolio and composition is not created please enter valid details!'
                 }
         return JsonResponse(data)
+
+class getTax(View):
+    """docstring for ClassName"""
+    def get(self, request):
+        tax_data = TaxRate.objects.all()
+        return render(request, 'tax_file.html', {'tax_object': tax_data})
+
+
+        
+class AddNewTax(View):
+    """docstring for ClassName"""
+    def post(self, request):
+        if request.method=='POST':
+            country = request.POST.get('country')
+            tax = request.POST.get('tax')
+            tax_obj = TaxRate.objects.create(
+                country=country,
+                tax=tax
+                )
+            response ={'status': True, 'message':'Tax Rate successfully added.'}        
+        return JsonResponse(response)
+
+
+

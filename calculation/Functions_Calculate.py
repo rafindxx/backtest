@@ -278,13 +278,9 @@ def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
         return 1
 
 def Set_Latest_Ex_Rate(Index_Currency,list,Ex_Rate,Latest_Ex_Rate,date,D_ISIN_Currency):
-    #print(Ex_Rate)
-    for row in list:
-
+    for row in list: 
         fromCurrency = D_ISIN_Currency[row[1]]
-        var2 = fromCurrency +'_'+date
-        #print(var2)
-
+        var2 = fromCurrency +'_'+date        
         if var2 in Ex_Rate:
             fromRate = (Ex_Rate[fromCurrency+'_'+date])
             if Index_Currency =="USD":
@@ -293,3 +289,6 @@ def Set_Latest_Ex_Rate(Index_Currency,list,Ex_Rate,Latest_Ex_Rate,date,D_ISIN_Cu
                 toRate = (Ex_Rate[Index_Currency+'_'+date])
             ex_Rate = toRate/fromRate
             Latest_Ex_Rate[row[1]] = ex_Rate
+        else:
+            if Index_Currency =="USD" and fromCurrency=="USD":
+                Latest_Ex_Rate[row[1]] = 1

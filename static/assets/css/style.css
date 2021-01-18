@@ -276,7 +276,20 @@ p {
       -moz-animation: ytp-right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both;
       -o-animation: ytp-right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both;
       animation: ytp-right-spin 1333ms cubic-bezier(0.4, 0, 0.2, 1) infinite both; }
-
+.tax-page{
+  margin-top:100px;
+}
+.add {
+    -webkit-appearance: textfield;
+    background-color: white;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    padding: 1px;
+    border-width: 2px;
+    border-style: inset; /* This rule adds the inset border */
+    border-color: initial;
+    border-image: initial;
+}
 /* Preloader Animations */
 @-webkit-keyframes ytp-spinner-linspin {
   to {
@@ -1832,3 +1845,4 @@ label.error{
     margin-bottom: 25px !important;
 }
 */
+.edit-tax{margin-left: 200px !important;}

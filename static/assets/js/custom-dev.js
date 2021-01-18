@@ -147,6 +147,11 @@ $("#portfolio_id").change(function() {
 //===================ajax call for rerun portfolio=======//
  $("#rerun").on('submit', function(e){
   e.preventDefault();
+  if( document.rerun.portfolio_id.value == "" )
+   {
+     $('.rerun-msg').html('<div class="alert alert-danger" role="alert">Please select one portfolio from dropdown list.</div>')
+     return false;
+   }
   var rerun_data = new FormData();
   var portfolio_id = $("#portfolio_id").val();
   var stat_date = $("#stat_date").val();
@@ -179,3 +184,50 @@ $("#portfolio_id").change(function() {
          }
       });
    });
+
+//=====================Ad Tax Rate===================//
+
+ $("#addtax").on('submit', function(e){
+  e.preventDefault();
+  var tax_data = new FormData();
+  var country = $("#country").val();
+  var tax = $("#tax").val();
+  tax_data.append('country', country);
+  tax_data.append('tax', tax);
+  console.log(tax_data)
+ $.ajax({
+       type: 'POST',
+       url: 'calculation/add_tax/',
+       data: tax_data,
+       dataType: 'json',
+       contentType: false,
+       cache: false,
+       processData:false,
+       beforeSend: function(){
+            $('.submitax').attr("disabled","disabled");
+            $('.loader').css('display','flex');
+         },
+         success: function(response){
+          console.log(response)
+
+         }
+      });
+   });
+
+//======================Update Tax Rate=================//
+$(document).ready(function() {
+  $('.mychoice').click(function() {
+    var formData = $('#myForm').serialize();
+    console.log('Posting the following: ', formData);
+    
+    $.ajax({
+      url: '/someurl',
+      data: formData,
+      type: 'post',
+      dataType: 'json',
+      success: function(data) {
+        //  ... do something with the data...
+      }
+    });
+  });
+});

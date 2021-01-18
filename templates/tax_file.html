@@ -1,0 +1,195 @@
+<!doctype html>
+{% load static %}
+<html class="no-js" lang="en">
+   <head>
+      <meta charset="utf-8">
+      <!--====== Title ======-->
+      <title>Back Test Calculation</title>
+      <meta name="description" content="">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+      <!--====== Favicon Icon ======-->
+      <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}" type="image/png">
+      <!--====== Slick CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/slick.css' %}">
+      <!--====== Font Awesome CSS ======-->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <!--====== Line Icons CSS ======-->
+      <!--====== Animate CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/css/model.css' %}">
+      <!--====== Bootstrap CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+      <!--====== Default CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/default.css' %}">
+      <!--====== Style CSS ======-->
+      <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+   </head>
+   <body>
+<div class="loader" style="display: none;" id="spinner">
+                  <img src="{% static 'assets/images/loader.gif' %}"/></div>
+      <!--[if IE]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+      <![endif]-->
+      <!--====== PRELOADER PART START ======-->
+      <div class="preloader">
+         <div class="loader">
+            <div class="ytp-spinner">
+               <div class="ytp-spinner-container">
+                  <div class="ytp-spinner-rotator">
+                     <div class="ytp-spinner-left">
+                        <div class="ytp-spinner-circle"></div>
+                     </div>
+                     <div class="ytp-spinner-right">
+                        <div class="ytp-spinner-circle"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!--====== PRELOADER PART ENDS ======-->
+      <!--====== HEADER PART START ======-->
+      <div class="sticky">
+         <header class="header-area">
+            <div class="navbar-area headroom headroom--not-bottom headroom--not-top headroom--unpinned">
+               <div class="container">
+                  <div class="row">
+                     <div class="col-lg-12">
+                        <nav class="navbar navbar-expand-lg">
+                           <a class="navbar-brand" href="{% url 'home' %}">
+                           <img src="{% static 'assets/images/logo.png' %}" alt="Logo">
+                           </a>
+                           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                           <span class="toggler-icon"></span>
+                           <span class="toggler-icon"></span>
+                           <span class="toggler-icon"></span>
+                           </button>
+                           <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
+                           </div>
+                           <!-- navbar collapse -->
+                           <div class="navbar-btn d-none d-sm-inline-block">
+                              <div class="header-hero-content">
+                                 <h3 class="hero-title wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.2s"><b></b> <span>Back Test </span> Calculation</b></h3>
+                              </div>
+                           </div>
+                        </nav>
+                        <!-- navbar -->
+                     </div>
+                  </div>
+                  <!-- row -->
+               </div>
+               <!-- container -->
+            </div>
+            <!-- navbar area -->
+            <div id="home" class="header-hero bg_cover d-lg-flex align-items-center" style="height:100px !important;">
+                     
+               </div>
+               <!-- header hero image -->
+            </div>
+            <!-- header hero -->
+         </header>
+      </div><div id="tax-myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+      <form name="addtax" id="addtax" action="#" method="POST">
+  <div class="row">
+    <div class="col">
+      <input type="text" name="country" id="country" class="form-control" placeholder="Country Name">
+    </div>
+    <div class="col">
+      <input type="text" name="tax" id="tax"class="form-control" placeholder="Country Tax Rate">
+    </div>
+
+  </div>   </br>
+      <button type="submit" class="btn btn-primary submitax">Add</button>
+</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+      <!--====== HEADER PART ENDS ======-->
+<div class="container tax-page">
+<!-- Modal -->
+   <div class="row"><div class="col"><button type="submit" class="btn btn-primary mb-2" data-toggle="modal" data-target="#tax-myModal">Add New Country Rate</button>
+    </div>
+<form name="" id="" action="" method="POST">
+<div class="col" style="text-align: right;"><button type="submit" class="btn btn-primary mb-2">Update</button></div></div>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Country</th>
+      <th scope="col">Tax</th>
+      <th scope="col">Update</th>
+    </tr>
+  </thead>
+  <tbody>
+   {% for tax in tax_object %}
+    <tr> 
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{{tax.country}}</td>
+      <td><input type="text"  id="" class="add" value="{{tax.tax}}"></td>
+      <td> <input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
+      
+    </tr>{% endfor %}
+   
+  </tbody>
+</table>
+</form></div>
+      <footer class="page-footer font-small blue">
+         <!-- Copyright -->
+         <div class="footer-copyright text-center py-3">© 2021 Copyright:
+            <a href="https://www.indxx.com/"> indxx.com</a>
+         </div>
+         <!-- Copyright -->
+      </footer>
+      <!-- Footer -->
+      <!--====== PART ENDS ======-->
+      <!-- row -->
+      <!--====== Jquery js ======-->
+      <script src="{% static 'assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+      <script src="{% static 'assets/js/vendor/modernizr-3.7.1.min.js' %}"></script>
+      <!--====== Bootstrap js ======-->
+      <script src="{% static 'assets/js/popper.min.js' %}"></script>
+      <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+      <!--====== Plugins js ======-->
+      <script src="{% static 'assets/js/plugins.js' %}"></script>
+      <!--====== Slick js ======-->
+      <script src="{% static 'assets/js/slick.min.js' %}"></script>
+      <!--====== Counter Up js ======-->
+      <script src="{% static 'assets/js/waypoints.min.js' %}"></script>
+      <script src="{% static 'assets/js/jquery.counterup.min.js' %}"></script>
+      <!--====== Appear js ======-->
+      <script src="{% static 'assets/js/jquery.appear.min.js' %}"></script>
+      <!--====== WOW js ======-->
+      <script src="{% static 'assets/js/wow.min.js' %}"></script>
+      <!--====== Headroom js ======-->
+      <script src="{% static 'assets/js/headroom.min.js' %}"></script>
+      <!--====== Jquery Nav js ======-->
+      <script src="{% static 'assets/js/jquery.nav.js' %}"></script>
+      <!--====== Scroll It js ======-->
+      <script src="{% static 'assets/js/scrollIt.min.js' %}"></script>
+      <!--====== Main js ======-->
+      <script src="{% static 'assets/js/main.js' %}"></script>
+      <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
+      <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
+      <script src="{% static 'assets/js/custom-dev.js' %}"></script>
+      <script type="text/javascript">
+         function refreshPage(){
+    window.location.reload();
+}
+
+      </script>
+   </body>
+</html>

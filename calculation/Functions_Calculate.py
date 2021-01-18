@@ -76,9 +76,14 @@ def Adjust_CA(D_Index,D_CA,isin_Data_Row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,L
 
     return dFactorPR*sFactorPR,dFactorTR*sFactorTR,dFactorNTR*sFactorNTR,10,sDividend,Spin,Split
 
-def Delist(Clist,date,D_LastDate):
+def Delist(Clist,date,D_LastDate,E_Date):
+    
     for row in Clist:
-        if D_LastDate[row[1]] == date:
+        print(date)
+        print(E_Date)
+        print(D_LastDate[row[1]])
+        if D_LastDate[row[1]] == date and date!= E_Date:
+            print("Remove:" +row[1])
             Clist.remove(row)
 
 def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,D_CA):

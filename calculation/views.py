@@ -30,15 +30,12 @@ class PortfolioView(View):
             currency = request.POST.get('currency')
             save_data = request.POST.get('save_data')
             csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
-            print(csv_data)
             if csv_data['error']:
-                print('1')
                 data = {
                     'status': False,
                     'error': csv_data['error']
                     }
             elif csv_data['warning'] and confirmbox =='':
-                print('12')
                 data = {
                     'status': True,
                     'warning': csv_data['warning']

@@ -99,11 +99,15 @@ def Validate_Read_CSV(file_Name, IDentifier):
     return final_data
 
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
+    print(D_Date)
     yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
     yesterday_date = yesterday.strftime("%x")
     format_str = '%m/%d/%Y'
-    E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
-    E_Date = E_Date.strftime("%x")
+    if str(last_Period)+'_START' in D_Date and str(last_Period)+'_END' in D_Date:
+        E_Date = D_Date[str(last_Period)+'_END']
+    else:
+        E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
+        E_Date = E_Date.strftime("%x")
     if yesterday_date == E_Date:
         TR_Price = Get_TR_PRICE(getList(D_RIC_ISIN),E_Date)
         for ric in D_RIC_ISIN:
@@ -159,7 +163,7 @@ def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
     return delistedISINs
 
 def Get_TAX():   
-    cur.execute('SELECT * from FDS_DataFeeds.dbo.tax_rate ')
+    cur.execute('SELECT * from FDS_DataFeeds.dbo.tax_rate')
     dir = {}
     for row in cur:
         dir[row[1]] = float(row[2].strip()[0:-1])# row[2].strip()
@@ -340,7 +344,8 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     data.append(comp_data)
     D_Data[str(period)] = data
     D_ISIN [str(period)] = comp_isin
-    save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date)
+    D_RIC_ISIN ={}
+    save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 
 def DateTime(current_time):

@@ -51,10 +51,6 @@ var csrftoken = getCookie('csrftoken');
          for (var index = 0; index < files; index++) {
             fd.append("protfolio_file", document.getElementById('protfolio_file').files[index]);
          }
-         var files1 = document.getElementById('tax_rate').files.length;
-         for (var index = 0; index < files1; index++) {
-            fd.append("tax_rate", document.getElementById('tax_rate').files[index]);
-         }
          var name = $("#name").val();
          var currency = $("#currency").val();
          var identifier = $("#identifier").val();
@@ -215,7 +211,7 @@ $("#portfolio_id").change(function() {
    });
 
 //======================Update Tax Rate=================//
-$(document).ready(function() {
+/*$(document).ready(function() {
 for(var counter = 1; counter < 200; counter++) {
   console.log('Inside the loop:' );
   $('.mychoice'+counter).click(function() {
@@ -245,4 +241,4 @@ for(var counter = 1; counter < 200; counter++) {
       });
 }
 }
-});
+});*/

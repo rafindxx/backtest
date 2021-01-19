@@ -192,6 +192,7 @@ def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,p
         Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate)
 
 def Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate):
+    print(Tax_Rate[row[5]])
     Constituents_Row = []
     Constituents_Row.append(period)
     Constituents_Row.append(date)
@@ -278,7 +279,6 @@ def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
         else:
             toRate = (Ex_Rate[toCurrency+'_'+date])
         ex_Rate = toRate/fromRate
-        print(ex_Rate)
         return ex_Rate
     else:
         return 1

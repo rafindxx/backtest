@@ -255,7 +255,7 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
         currency_list.append(Index_Currency)
         Ex_Rate = Get_Currency(currency_list,S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"))
         Tax_Rate = Get_TAX()
-        D_CA = Get_CA(cursor1,D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
+        D_CA = Get_CA(D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
         
         Latest_Price={}
         Latest_Ex_Rate={}

@@ -50,8 +50,10 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 last_Period = period
                 if '-' in startDate:
                     startDate = check_date_formate(startDate)
+                    line[3] = startDate
                 if '-' in endDate:
                     endDate = check_date_formate(endDate)
+                    line[4] = endDate
                 if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
                     errorMessage = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
                 else:                    
@@ -59,7 +61,6 @@ def Validate_Read_CSV(file_Name, IDentifier):
 
         '''Check for Total sum of weights'''                        
         for key in d1:
-            #print(d1[key])
             if d1[key]>100.44 or d1[key]<99.50:
                 errorMessage = "Total weight of period " + key +" is " + str(d1[key])+"."
         '''Check for Delisted Securities'''                        
@@ -104,7 +105,6 @@ def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
     E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
     E_Date = E_Date.strftime("%x")
     if yesterday_date == E_Date:
-        print("TR Price Update")
         TR_Price = Get_TR_PRICE(getList(D_RIC_ISIN),E_Date)
         for ric in D_RIC_ISIN:
             var1 = ric+'_'+date
@@ -152,7 +152,6 @@ def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
     dir1 = {}
     delistedISINs
     for row in cur:
-        #print(row)
         dir1[row[0]] = row[2]
     for ISIN in ISIN_LIST:
         if ISIN not in dir1:
@@ -174,7 +173,6 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     Query= Q.Query_Divident(IDentifier,isins,S_DATE,E_DATE)
     cur.execute(Query)
     for row in cur:
-        #print(row)#
         var = row[0]+'_'+row[5].strftime("%x")
         if var not in D_CA_Dividend:
             D_CA_Dividend[var] = list()
@@ -201,7 +199,6 @@ def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     D_ISIN_Currency ={}
     D_LastDate = {}
     for row in cur:
-        #print(row)
         D_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
         D_ISIN_Currency[row[0]] = row[3]
         D_LastDate[row[0]] = row[1].strftime("%x")
@@ -217,7 +214,6 @@ def Get_TR_PRICE(RIC_LIST,DATE):
     cursor.execute(Query)
     D_TR_Price = {}
     for row in cursor:
-        #print(row)
         D_TR_Price[row[0]+'_'+row[1].strftime("%x")] = row[2]
     cursor.close()
     connection.close()
@@ -226,7 +222,6 @@ def Get_TR_PRICE(RIC_LIST,DATE):
 def Get_Currency(C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
     Query="SELECT RTS.iso_currency, RTS.date, RTS.exch_rate_usd, RTS.exch_rate_per_usd FROM FDS_DataFeeds.ref_v2.fx_rates_usd AS RTS WHERE RTS.date between '"+S_DATE+"' and '"+E_DATE+"' and RTS.iso_currency in ("+clist +") ORDER BY RTS.date"
-    print("Currency Query : "+Query)
     cur.execute(Query)
     dir = {}
     for row in cur:
@@ -362,7 +357,6 @@ def check_ric(ric_data):
     for row in cursor:
         if row[1]:
             ric_active_data[row[0]] = row[1]
-            print(ric_active_data)
         else:
             msg = "Please check input file and add an active RIC value."
             return msg
@@ -384,6 +378,5 @@ def column_validation_check(df):
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
     for col in column_list:
         if col not in df.columns:
-            print('hhiiii')
             return False
     return True

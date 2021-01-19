@@ -30,17 +30,20 @@ class PortfolioView(View):
             currency = request.POST.get('currency')
             save_data = request.POST.get('save_data')
             csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
+            print(csv_data)
             if csv_data['error']:
+                print('1')
                 data = {
                     'status': False,
                     'error': csv_data['error']
                     }
             elif csv_data['warning'] and confirmbox =='':
+                print('12')
                 data = {
                     'status': True,
                     'warning': csv_data['warning']
                     }
-            elif 'last_Period' in csv_data and 'D_RIC_ISIN' in csv_data:
+            else:
                 last_Period = csv_data['last_Period']
                 D_RIC_ISIN = csv_data['D_RIC_ISIN']
                 index_vlaue = request.POST.get('index_vlaue')
@@ -48,32 +51,31 @@ class PortfolioView(View):
                 if market_value==0 or index_vlaue==0:
                     index_vlaue= 1000
                     market_value=100000
-                if market_value < index_vlaue:
-                    data = {
-                    'status': False,
-                    'error_msg': 'Market Value should be greater then Index Value.'
-                    }
-            else:
                 if save_data:
                     portfolio = create_portfolio(request, file_name, csv_data, last_Period)
                     composition = portfolio_composition(csv_data, currency, portfolio, last_Period)
                 if tax_file:
                     save_tax_rate = add_tax_rate(tax_file)
-                D_Index["Identifier"] = identifier
-                D_Index["IV"] = int(request.POST.get('index_vlaue'))
-                D_Index["MV"] = int(request.POST.get('market_value'))
-                D_Index["Currency"] = currency
-                D_Index["Adjustment"] = request.POST.get('spin_off')
-                D_Index["DCFO"] = request.POST.get('download')
-                save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'], D_RIC_ISIN, last_Period)
-                data = {
-                    'status': True,
-                    'success': 'Index file and Constituents file is created successfully!',
-                    'index_file': save_file['index_value_file'],
-                    'constituents_file': save_file['constituents_file']
+                if market_value < index_vlaue:
+                    data = {
+                    'status': False,
+                    'error_msg': 'Market Value should be greater then Index Value.'
                     }
-
-        return JsonResponse(data)
+                else:
+                    D_Index["Identifier"] = identifier
+                    D_Index["IV"] = int(request.POST.get('index_vlaue'))
+                    D_Index["MV"] = int(request.POST.get('market_value'))
+                    D_Index["Currency"] = currency
+                    D_Index["Adjustment"] = request.POST.get('spin_off')
+                    D_Index["DCFO"] = request.POST.get('download')
+                    save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'], D_RIC_ISIN, last_Period)
+                    data = {
+                        'status': True,
+                        'success': 'Index file and Constituents file is created successfully!',
+                        'index_file': save_file['index_value_file'],
+                        'constituents_file': save_file['constituents_file']
+                        }
+            return JsonResponse(data)
 
 
 

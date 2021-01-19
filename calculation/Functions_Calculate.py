@@ -13,11 +13,11 @@ def Print_Reports(Index_List,Constituents_List):
         writer1.writerows(Index_List)
     with open(outFileName2, 'w', newline='') as csvfile:
         writer2 = csv.writer(csvfile)
-        #writer2.writerow(["S.No","Date","Index Value PR","Index Value TR","Index Value NTR"])
         writer2.writerow(["S.No","Date","Index Value PR","Market CAP PR","Divisor PR","Index Value TR","Market CAP TR","Divisor TR","Index Value NTR","Market CAP NTR","Divisor NTR","ISIN","Currency","Country","TAX","Share PR","Share TR","Share NTR","Local Price","Index PRICE","MCAP PR","MCAP TR","MCAP NTR","Currency Price","Price Date","Weight PR","Weight TR","Weight NTR","Dividend","Special Dividend","Split","Spin"])
         writer2.writerows(Constituents_List)
     file_names = {'index_value_file':outFileName1,'constituents_file':outFileName2}
     return file_names
+
 
 def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest_Price):
     isin = isinRow[1]
@@ -32,7 +32,7 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
         spin_off_flag = row[2]
         if spin_off_flag ==1:
             Spin = div_code
-
+        
         exRate = Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date)
         amount = row[1]
         amount_Tax = amount*(1-countryTax)
@@ -41,8 +41,8 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             amount_PR  = amount*exRate
         else:
             amount_PR=0
-            Dividend = div_code
-
+            Dividend = div_code            
+        
         amount_TR  = amount*exRate
         amount_NTR  = amount_Tax*exRate
 
@@ -51,16 +51,17 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
         aFactor_NTR =  aFactor_NTR*(1 - (amount_NTR/Latest_Price[isin][0]))
     return aFactor_PR,aFactor_TR,aFactor_NTR,Dividend,sDividend,Spin
 
+
 def Adjust_Split(splitList):
     sFactor_PR,sFactor_TR,sFactor_NTR = 1,1,1
     for row in splitList:
         sFactor_PR =  1/row[2]
         sFactor_TR =  1/row[2]
         sFactor_NTR =  1/row[2]
-    return sFactor_PR,sFactor_TR,sFactor_NTR,row[2]
+    return sFactor_PR,sFactor_TR,sFactor_NTR,row[2]        
+
 
 def Adjust_CA(D_Index,D_CA,isin_Data_Row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,Latest_Price):
-    #adjustmentFactor_PR,adjustmentFactor_TR,adjustmentFactor_NTR = 1,1,1
     dFactorPR,dFactorTR,dFactorNTR =1,1,1
     sFactorPR,sFactorTR,sFactorNTR = 1,1,1
     Dividend,sDividend,Spin,Split = 0,0,0,0
@@ -73,19 +74,18 @@ def Adjust_CA(D_Index,D_CA,isin_Data_Row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,L
     if var in D_CA["Split"]:
         split_list = D_CA["Split"][var]
         sFactorPR,sFactorTR,sFactorNTR,Split = Adjust_Split(split_list)
+    
+    return dFactorPR*sFactorPR,dFactorTR*sFactorTR,dFactorNTR*sFactorNTR,Dividend,sDividend,Spin,Split 
 
-    return dFactorPR*sFactorPR,dFactorTR*sFactorTR,dFactorNTR*sFactorNTR,10,sDividend,Spin,Split
 
 def Delist(Clist,date,D_LastDate,E_Date):
     
     for row in Clist:
-        print(date)
-        print(E_Date)
-        print(D_LastDate[row[1]])
         if D_LastDate[row[1]] == date and date!= E_Date:
             print("Remove:" +row[1])
             Clist.remove(row)
 
+           
 def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,D_CA):
     Constituents_List = list()
     M_CAP_PR,M_CAP_TR,M_CAP_NTR = 0,0,0
@@ -104,7 +104,7 @@ def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISI
             row[7] = shares_PR
             row[8] = shares_TR
             row[9] = shares_NTR
-
+            
         M_CAP_PR += row[7]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_TR += row[8]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_NTR += row[9]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
@@ -112,27 +112,26 @@ def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISI
         row[13] = row[7]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         row[14] = row[8]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         row[15] = row[9]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
-        #print("------------------------------------------------")
-        #print(row)
         row[16] = Dividend
         row[17] = sDividend
         row[18] = Spin
         row[19] = Split
-
+        
 
     D_Index["M_Cap_PR"]=M_CAP_PR
     D_Index["M_Cap_TR"]=M_CAP_TR
     D_Index["M_Cap_NTR"]=M_CAP_NTR
-
+    
     D_Index["Divisor_PR"]=M_CAP_PR/D_Index["Index_Value_PR"]
     D_Index["Divisor_TR"]=M_CAP_TR/D_Index["Index_Value_TR"]
     D_Index["Divisor_NTR"]=M_CAP_NTR/D_Index["Index_Value_NTR"]
-
+    
     for row in Clist:
         row[10] = (row[13]*100)/D_Index["M_Cap_PR"]
         row[11] = (row[14]*100)/D_Index["M_Cap_PR"]
         row[12] = (row[15]*100)/D_Index["M_Cap_PR"]
 
+          
 def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_List_Final,period,Tax_Rate,D_ISIN_Currency,print_flag):
     Constituents_List = list()
     M_CAP_PR,M_CAP_TR,M_CAP_NTR = 0,0,0
@@ -140,7 +139,6 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
     Divisor_PR = D_Index["M_Cap_PR"]/D_Index["Index_Value_PR"]
     Divisor_TR = D_Index["M_Cap_TR"]/D_Index["Index_Value_TR"]
     Divisor_NTR = D_Index["M_Cap_NTR"]/D_Index["Index_Value_NTR"]
-    #print(list)
     for row in Clist:
         if print_flag==1:
             Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate)
@@ -157,10 +155,7 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
     D_Index["Index_Value_PR"] = Index_Value_PR
     D_Index["Index_Value_TR"] = Index_Value_TR
     D_Index["Index_Value_NTR"] = Index_Value_NTR
-    #D_Index["Divisor_PR"]=M_CAP_PR/Index_Value_PR
-    #D_Index["Divisor_TR"]=M_CAP_TR/Index_Value_TR
-    #D_Index["Divisor_NTR"]=M_CAP_NTR/Index_Value_NTR
-
+    
     for row in Constituents_List:
         row[2] = D_Index["Index_Value_PR"]
         row[3] = D_Index["M_Cap_PR"]
@@ -172,13 +167,14 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
         row[9] = D_Index["M_Cap_NTR"]
         row[10] = D_Index["Divisor_NTR"]
     Constituents_List_Final.extend(Constituents_List)
-
+    
 def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,period,Tax_Rate,D_ISIN_Currency):
     M_Cap = D_Index["MV"]
     ISIN_Shares = {}
     for row in list:
         weight = float(row[2][0:-1])
         shares = (weight*M_Cap)/(100*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]])
+        
         row.append(shares)
         row.append(shares)
         row.append(shares)
@@ -193,7 +189,6 @@ def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,p
         row.append('')
         row.append('')
         row.append('')
-
         Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate)
 
 def Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate):
@@ -210,27 +205,27 @@ def Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Curr
     Constituents_Row.append(row[9])
     Constituents_Row.append(Latest_Price[row[1]][0])
     Constituents_Row.append(Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]])
-
+    
     Constituents_Row.append(row[7]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]])
     Constituents_Row.append(row[8]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]])
     Constituents_Row.append(row[9]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]])
-
+    
     Constituents_Row.append(Latest_Ex_Rate[row[1]])
     Constituents_Row.append(Latest_Price[row[1]][1])
-
+    
     Constituents_Row.append(row[10])
     Constituents_Row.append(row[11])
     Constituents_Row.append(row[12])
-
-    Constituents_Row.append(row[16])
+    
+    Constituents_Row.append(row[16])    
     Constituents_Row.append(row[17])
     Constituents_Row.append(row[18])
     Constituents_Row.append(row[19])
-
+    
     Constituents_List.append(Constituents_Row)
 
+           
 def Fill_Index_Value(D_Index,Constituents_Row):
-    #Index Value PR,Market CAP PR,Divisor PR,Index Value TR,Market CAP TR,Divisor TR,Index Value NTR,Market CAP NTR,Divisor NTR,
     Constituents_Row.append(D_Index["Index_Value_PR"])
     Constituents_Row.append(D_Index["M_Cap_PR"])
     Constituents_Row.append(D_Index["Divisor_PR"])
@@ -241,34 +236,39 @@ def Fill_Index_Value(D_Index,Constituents_Row):
     Constituents_Row.append(D_Index["M_Cap_NTR"])
     Constituents_Row.append(D_Index["Divisor_NTR"])
 
+
 def Fill_Index_Report_Data(D_Index,Index_List,period,S_Date):
    row = []
    row.append(period)
    row.append(str(S_Date))
    row.append(D_Index["Index_Value_PR"])
    row.append(D_Index["Index_Value_TR"])
-   row.append(D_Index["Index_Value_NTR"])
+   row.append(D_Index["Index_Value_NTR"])                
    Index_List.append(row)
 
+    
 def Set_Latest_Price(list,D_Price,Latest_Price,date):
     for row in list:
         var1 = row[1]+'_'+date
-
-        if var1 in D_Price:
+        
+        if var1 in D_Price:            
             price = D_Price[var1]
             Row = []
             Row.append(price)
             Row.append(date)
             Latest_Price[row[1]] = Row
+
+
 def Get_Price(ISIN,D_Price,date,Latest_Price):
     var1 = ISIN+'_'+date
-
-    if var1 in D_Price:
+        
+    if var1 in D_Price:            
         price = D_Price[var1]
         return price
     else:
         return Latest_Price[ISIN][0]
 
+        
 def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
     var1 = fromCurrency +'_'+date
     if var1 in Ex_Rate:
@@ -278,14 +278,17 @@ def Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date):
         else:
             toRate = (Ex_Rate[toCurrency+'_'+date])
         ex_Rate = toRate/fromRate
+        print(ex_Rate)
         return ex_Rate
     else:
         return 1
-
+    
 def Set_Latest_Ex_Rate(Index_Currency,list,Ex_Rate,Latest_Ex_Rate,date,D_ISIN_Currency):
-    for row in list: 
+    for row in list:
+        
         fromCurrency = D_ISIN_Currency[row[1]]
-        var2 = fromCurrency +'_'+date        
+        var2 = fromCurrency +'_'+date
+        
         if var2 in Ex_Rate:
             fromRate = (Ex_Rate[fromCurrency+'_'+date])
             if Index_Currency =="USD":

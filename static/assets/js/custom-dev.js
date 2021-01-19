@@ -216,18 +216,33 @@ $("#portfolio_id").change(function() {
 
 //======================Update Tax Rate=================//
 $(document).ready(function() {
-  $('.mychoice').click(function() {
-    var formData = $('#myForm').serialize();
-    console.log('Posting the following: ', formData);
-    
-    $.ajax({
-      url: '/someurl',
-      data: formData,
-      type: 'post',
-      dataType: 'json',
-      success: function(data) {
-        //  ... do something with the data...
-      }
-    });
-  });
+for(var counter = 1; counter < 200; counter++) {
+  console.log('Inside the loop:' );
+  $('.mychoice'+counter).click(function() {
+  e.preventDefault();
+  var tax_data = new FormData();
+  var country = $("#country").val();
+  var tax = $("#tax").val();
+  tax_data.append('country', country);
+  tax_data.append('tax', tax);
+  console.log(tax_data)
+ $.ajax({
+       type: 'POST',
+       url: 'calculation/update_tax/',
+       data: tax_data,
+       dataType: 'json',
+       contentType: false,
+       cache: false,
+       processData:false,
+       beforeSend: function(){
+            $('.submitax').attr("disabled","disabled");
+            $('.loader').css('display','flex');
+         },
+         success: function(response){
+          console.log(response)
+
+         }
+      });
+}
+}
 });

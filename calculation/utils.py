@@ -238,23 +238,25 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
         Index_Currency = D_Index["Currency"]
         format_str = '%m/%d/%Y'
         S_Date = datetime.datetime.strptime(D_Date[period+"_START"], format_str).date()- datetime.timedelta(days=0)
+        if S_Date.weekday()==5:
+            S_Date = S_Date - datetime.timedelta(days=1)
         S_Date_Minus_Five = datetime.datetime.strptime(D_Date[period+"_START"], format_str).date()- datetime.timedelta(days=5)
         E_Date = datetime.datetime.strptime(D_Date[period+"_END"], format_str).date()- datetime.timedelta(days=0)
-
+       
         i=0
 
         D_Index["M_Cap_PR"],D_Index["M_Cap_TR"],D_Index["M_Cap_NTR"]=D_Index["MV"],D_Index["MV"],D_Index["MV"]
         D_Index["Index_Value_PR"], D_Index["Index_Value_TR"],D_Index["Index_Value_NTR"]= D_Index["IV"],D_Index["IV"],D_Index["IV"]
         Divisor = D_Index["MV"]/D_Index["IV"]
         D_Index["Divisor_PR"], D_Index["Divisor_TR"],D_Index["Divisor_NTR"]=Divisor,Divisor,Divisor
-
+       
         D_Price,D_LastDate,currency_list,D_ISIN_Currency = Get_PRICE(D_ISIN[period],S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
         Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price)
         currency_list.append(Index_Currency)
         Ex_Rate = Get_Currency(currency_list,S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"))
         Tax_Rate = Get_TAX()
-        D_CA = Get_CA(D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
-
+        D_CA = Get_CA(cursor1,D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
+        
         Latest_Price={}
         Latest_Ex_Rate={}
 
@@ -269,16 +271,14 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
                     M_Cap = f_c.Cal_Index_Close(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),Constituents_List,period,Tax_Rate,D_ISIN_Currency,print_flag)
                 f_c.Fill_Index_Report_Data(D_Index,Index_List,period,S_Date_Minus_Five)
                 i += 1
-
+                
             if S_Date_Minus_Five.weekday()==4:
                 S_Date_Minus_Five = S_Date_Minus_Five + datetime.timedelta(days=3)
             else:
                 S_Date_Minus_Five = S_Date_Minus_Five + datetime.timedelta(days=1)
-
             if S_Date_Minus_Five>S_Date and i!=0:
                 f_c.Delist(D_Data[period],S_Date_Minus_Five.strftime("%x"),D_LastDate,E_Date.strftime("%x"))
                 f_c.Cal_Index_Open(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),Tax_Rate,D_ISIN_Currency,Ex_Rate,D_CA)
-            #    f_c.Adjust_CA(D_Index,D_Data[period],Latest_Price,Latest_Ex_Rate,S_Date_Minus_Five.strftime("%x"),D_ISIN_Currency,D_CA,Ex_Rate)
     files = f_c.Print_Reports(Index_List,Constituents_List)
     return files
 

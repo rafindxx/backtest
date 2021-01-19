@@ -139,8 +139,11 @@
     <tr> 
       <th scope="row">{{ forloop.counter }}</th>
       <td>{{tax.country}}</td>
-      <td><input type="text"  id="" class="add" value="{{tax.tax}}"></td>
+      <form id="update_tax_{{tax.country}}">
+      <td><input type="text"  id="tax_value_{{forloop.counter}}" class="add" value="{{tax.tax}}">
+        <input type="hidden" name="tax_id_{{forloop.counter}}" value= "{{tax.id}}"></td>
       <td> <input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
+    </form>
       
     </tr>{% endfor %}
    

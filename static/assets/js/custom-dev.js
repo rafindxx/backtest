@@ -2,12 +2,14 @@ $(document).ready(function() {
     $("#backtest-cal").validate({
         rules: {
             protfolio_file:{
-               required: true
+               required: true,
+               extension: "csv"
             }
         },
         messages: {
             protfolio_file:{
-                    required: "Please select input CSV file only"
+                    required: "Please select input CSV file only", 
+                    extension:"Select csv input file format"
             } ,
         }
     });

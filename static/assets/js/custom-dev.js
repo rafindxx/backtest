@@ -91,17 +91,17 @@ var csrftoken = getCookie('csrftoken');
          success: function(response){
             if(response.error){
               $('.loader').css('display','none');
-              $('.msg').html('<div class="alert alert-danger"><strong>Error!</strong>'+response.error+'</div>');
+              $('.msg').html('<div class="alert alert-danger"><strong>Error! </strong>'+response.error+'</div>');
               }else if (response.error_msg){
                 $('.loader').css('display','none');
-                $('.msg').html('<div class="alert alert-danger"><strong>Error!</strong>'+response.error_msg+'</div>');
+                $('.msg').html('<div class="alert alert-danger"><strong>Error! </strong>'+response.error_msg+'</div>');
 
 
             }else if(response.warning){
                $('.loader').css('display','none');
                $("#myModal").modal('show');
                $('#confirmbox').val("yes");
-               $('.warning').html('<div class="alert alert-warning"><strong>Warning!</strong>'+response.warning+'</div>');
+               $('.warning').html('<div class="alert alert-warning"><strong>Warning! </strong>'+response.warning+'</div>');
 
             }else if(response.success){
               $("#myModal").modal('hide');

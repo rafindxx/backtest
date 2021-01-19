@@ -23,6 +23,10 @@ def Validate_Read_CSV(file_Name, IDentifier):
     errorMessage = ""
     warningMessage = ""
     df = pd.read_csv(file_Name)
+    csv_check = column_validation_check(df)
+    if csv_check == False:
+        errorMessage = {'error':"Please add valid data in csv file."}
+        return errorMessage
     store_period = df['Period'].iloc[0]
     store_start_date =  df['Start date'].iloc[0]
     store_end_date =  df['End date'].iloc[0]
@@ -375,3 +379,11 @@ def check_date_formate(date):
     date = date.split('-')
     date = date[0] +'/'+date[1]+'/'+date[2]
     return date
+
+def column_validation_check(df):
+    column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
+    for col in column_list:
+        if col not in df.columns:
+            print('hhiiii')
+            return False
+    return True

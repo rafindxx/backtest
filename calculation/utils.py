@@ -25,7 +25,11 @@ def Validate_Read_CSV(file_Name, IDentifier):
     df = pd.read_csv(file_Name)
     csv_check = column_validation_check(df)
     if csv_check['status']== False:
-        errorMessage = {"error":csv_check['msg']}
+        errorMessage = {"error":csv_check['message']}
+        return errorMessage
+    ric_error = check_ric(df['RIC'].to_list())
+    if ric_error['status'] == False:
+        errorMessage = {'error':ric_error['message']}
         return errorMessage
     store_period = df['Period'].iloc[0]
     store_start_date =  df['Start date'].iloc[0]
@@ -36,6 +40,10 @@ def Validate_Read_CSV(file_Name, IDentifier):
         for line in csvreader:
             if line[0] == store_period and store_start_date != line[3] or store_end_date != line[4]:
                 errorMessage = {"error":"Please check your portfolio start date and end date should be same for one period."}
+                return errorMessage
+            elif str(line[0]) != str(store_period) and store_end_date != line[3]:
+                error_dat= "Please check you csv fil period " + str(line[0]) +" of start date should be equal to "+ str(store_period)+" end date."
+                errorMessage = {"error":error_dat}
                 return errorMessage
             elif line[0] != store_period:
                 store_period = line[0]
@@ -58,7 +66,9 @@ def Validate_Read_CSV(file_Name, IDentifier):
                     endDate = check_date_formate(endDate)
                     line[4] = endDate
                 if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
-                    errorMessage = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                    error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                    errorMessage = {"error":error}
+                    return errorMessage
                 else:                    
                     Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
 
@@ -357,17 +367,21 @@ def DateTime(current_time):
     return cr_date
 
 def check_ric(ric_data):
+    query_ric_param = getRicList(ric_data)
     ric_active_data= {}
     connection = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=3.7.99.191;DATABASE=TR_Datafeeds;UID=sa;PWD=Indxx@1234')
     cursor = connection.cursor()
-    Query= Q.Query_TR_Equity(ric_data)
+    Query= Q.Query_TR_Equity(query_ric_param)
     cursor.execute(Query)
     for row in cursor:
-        if row[1]:
-            ric_active_data[row[0]] = row[1]
-        else:
-            msg = "Please check input file and add an active RIC value."
-            return msg
+        ric_active_data[row[0]] = row[1]
+    for ric in ric_data:
+        if ric not in ric_active_data.keys():
+            response = {"status":False, "message":"Please chekc your csv file you have added invalid RIC '" +ric+"'"}
+            return response
+        response = {"status":True, "message":''}
+        return response
+
 
 def getList(dict):
     list_keys = []
@@ -376,6 +390,11 @@ def getList(dict):
     str1 = "', '".join(list_keys)
     str1 = "'"+str1+"'"
     return str1
+def getRicList(ric_list):
+    str2 = "', '".join(ric_list)
+    str2 = "'"+str2+"'"
+    return str2
+
 
 def check_date_formate(date):
     date = date.split('-')
@@ -384,14 +403,16 @@ def check_date_formate(date):
 
 def column_validation_check(df):
     if df.isnull().values.any():
-        error = {"status":False, "msg":"Please chekc your CSV file its contain null value add a valid value in csv file."}
-        return error
+        response = {"status":False, "message":"Please chekc your CSV file it contain null value add a valid value in csv file."}
+        return response
     df_column_list = list(df.columns.values)
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
     if set(df_column_list) != set(column_list):
-        error = {"status":False, "msg":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
-        return error
+        response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
+        return response
     for col in column_list:
         if col not in df.columns:
-            {"status":False, "msg":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
-    return {"status":True, "msg":'csv valid'}
+            response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
+            return response
+        response = {"status":True, 'message':''}
+        return response

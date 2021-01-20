@@ -24,8 +24,8 @@ def Validate_Read_CSV(file_Name, IDentifier):
     warningMessage = ""
     df = pd.read_csv(file_Name)
     csv_check = column_validation_check(df)
-    if csv_check == False:
-        errorMessage = {'error':"Please add valid data in csv file."}
+    if csv_check['status']== False:
+        errorMessage = {"error":csv_check['msg']}
         return errorMessage
     store_period = df['Period'].iloc[0]
     store_start_date =  df['Start date'].iloc[0]
@@ -35,14 +35,17 @@ def Validate_Read_CSV(file_Name, IDentifier):
         next(csvreader, None)
         for line in csvreader:
             if line[0] == store_period and store_start_date != line[3] or store_end_date != line[4]:
-                errorMessage = "Please check your portfolio start date and end date should be same for one period."
+                errorMessage = {"error":"Please check your portfolio start date and end date should be same for one period."}
+                return errorMessage
             elif line[0] != store_period:
                 store_period = line[0]
                 store_start_date = line[3]
                 store_end_date = line[4]
             '''Check for Mandatory Fields'''
             if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
-                return "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                errorMessage = {"error":error_dat}
+                return errorMessage
             else:                
                 startDate= line[3]
                 endDate  = line[4]
@@ -93,13 +96,13 @@ def Validate_Read_CSV(file_Name, IDentifier):
             errorMessage = "Please check your portfolio."+errorMessage
         if D_RIC_ISIN:
             ric_error = check_ric(getList(D_RIC_ISIN))
-            errorMessage = ric_error
+            errorMessage = {'error':ric_error}
+            return errorMessage
         
     final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
     return final_data
 
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
-    print(D_Date)
     yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
     yesterday_date = yesterday.strftime("%x")
     format_str = '%m/%d/%Y'
@@ -380,8 +383,15 @@ def check_date_formate(date):
     return date
 
 def column_validation_check(df):
+    if df.isnull().values.any():
+        error = {"status":False, "msg":"Please chekc your CSV file its contain null value add a valid value in csv file."}
+        return error
+    df_column_list = list(df.columns.values)
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
+    if set(df_column_list) != set(column_list):
+        error = {"status":False, "msg":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
+        return error
     for col in column_list:
         if col not in df.columns:
-            return False
-    return True
+            {"status":False, "msg":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
+    return {"status":True, "msg":'csv valid'}

@@ -26,6 +26,9 @@ def Validate_Read_CSV(file_Name, IDentifier):
     with open(file_Name,'r') as csvfile:
         csvreader = csv.reader(csvfile)
         for line in csvreader:
+            if i ==1:
+                store_period = line[0]
+                store_end_date = line[4] 
             if i == 0:
                 csv_check = column_validation_check(line)
                 if csv_check['status']== False:
@@ -52,7 +55,14 @@ def Validate_Read_CSV(file_Name, IDentifier):
                         error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
                         errorMessage = {"error":error}
                         return errorMessage
-                    else:                    
+
+                    if store_period != line[0] and store_end_date != D_Date[period+'_START']:
+                        error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                        errorMessage = {"error":error}
+                        return errorMessage
+                    else:
+                        store_period = line[0]
+                        store_end_date = line[4]                    
                         Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
             i += 1
 

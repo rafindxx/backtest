@@ -214,8 +214,7 @@ $("#portfolio_id").change(function() {
 
 //======================Update Tax Rate=================//
 /*$(document).ready(function() {
-for(var counter = 1; counter < 200; counter++) {
-  console.log('Inside the loop:' );
+
   $('.mychoice'+counter).click(function() {
   e.preventDefault();
   var tax_data = new FormData();
@@ -242,5 +241,5 @@ for(var counter = 1; counter < 200; counter++) {
          }
       });
 }
-}
+
 });*/

@@ -82,7 +82,6 @@ def Delist(Clist,date,D_LastDate,E_Date):
     
     for row in Clist:
         if D_LastDate[row[1]] == date and date!= E_Date:
-            print("Remove:" +row[1])
             Clist.remove(row)
 
            
@@ -192,7 +191,6 @@ def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,p
         Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate)
 
 def Fill_Constituents_List(D_Index,Constituents_List,row,period,date,D_ISIN_Currency,Tax_Rate,Latest_Price,Latest_Ex_Rate):
-    print(Tax_Rate[row[5]])
     Constituents_Row = []
     Constituents_Row.append(period)
     Constituents_Row.append(date)

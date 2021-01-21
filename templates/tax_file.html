@@ -142,7 +142,7 @@
       <form id="update_tax_{{tax.country}}">
       <td><input type="text"  id="tax_value_{{forloop.counter}}" class="add" value="{{tax.tax}}">
         <input type="hidden" name="tax_id_{{forloop.counter}}" value= "{{tax.id}}"></td>
-      <td> <input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
+      <td> <input type="checkbox" class="form-check-input" id="exampleCheck1" value="update_tax_{{tax.country}}"></td>
     </form>
       
     </tr>{% endfor %}

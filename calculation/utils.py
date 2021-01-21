@@ -22,57 +22,41 @@ def Validate_Read_CSV(file_Name, IDentifier):
     last_Period = 1
     errorMessage = ""
     warningMessage = ""
-    df = pd.read_csv(file_Name)
-    csv_check = column_validation_check(df)
-    if csv_check['status']== False:
-        errorMessage = {"error":csv_check['message']}
-        return errorMessage
-    ric_error = check_ric(df['RIC'].to_list())
-    if ric_error['status'] == False:
-        errorMessage = {'error':ric_error['message']}
-        return errorMessage
-    store_period = df['Period'].iloc[0]
-    store_start_date =  df['Start date'].iloc[0]
-    store_end_date =  df['End date'].iloc[0]
+    i = 0
     with open(file_Name,'r') as csvfile:
         csvreader = csv.reader(csvfile)
-        next(csvreader, None)
         for line in csvreader:
-            if line[0] == store_period and store_start_date != line[3] or store_end_date != line[4]:
-                errorMessage = {"error":"Please check your portfolio start date and end date should be same for one period."}
-                return errorMessage
-            elif str(line[0]) != str(store_period) and store_end_date != line[3]:
-                error_dat= "Please check you csv fil period " + str(line[0]) +" of start date should be equal to "+ str(store_period)+" end date."
-                errorMessage = {"error":error_dat}
-                return errorMessage
-            elif line[0] != store_period:
-                store_period = line[0]
-                store_start_date = line[3]
-                store_end_date = line[4]
-            '''Check for Mandatory Fields'''
-            if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
-                error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                errorMessage = {"error":error_dat}
-                return errorMessage
-            else:                
-                startDate= line[3]
-                endDate  = line[4]
-                period = line[0]
-                last_Period = period
-                if '-' in startDate:
-                    startDate = check_date_formate(startDate)
-                    line[3] = startDate
-                if '-' in endDate:
-                    endDate = check_date_formate(endDate)
-                    line[4] = endDate
-                if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
-                    error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                    errorMessage = {"error":error}
+            if i == 0:
+                csv_check = column_validation_check(line)
+                if csv_check['status']== False:
+                    errorMessage = {"error":csv_check['message']}
                     return errorMessage
-                else:                    
-                    Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
+            else:
+                '''Check for Mandatory Fields'''
+                if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
+                    error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                    errorMessage = {"error":error_dat}
+                    return errorMessage
+                else:                
+                    startDate= line[3]
+                    endDate  = line[4]
+                    period = line[0]
+                    last_Period = period
+                    if '-' in startDate:
+                        startDate = startDate.replace("-", "/")
+                        line[3] = startDate
+                    if '-' in endDate:
+                        endDate = endDate.replace("-", "/")
+                        line[4] = endDate
+                    if (period+'_START' in D_Date and D_Date[period+'_START']!= startDate) or (period+'_END' in D_Date and D_Date[period+'_END']!= endDate) :
+                        error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                        errorMessage = {"error":error}
+                        return errorMessage
+                    else:                    
+                        Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
+            i += 1
 
-        '''Check for Total sum of weights'''                        
+        '''Check fo Total sum of weights'''                        
         for key in d1:
             if d1[key]>100.44 or d1[key]<99.50:
                 errorMessage = "Total weight of period " + key +" is " + str(d1[key])+"."
@@ -90,7 +74,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
         if '-' in D_Date[last_Period+'_END']:
-            d_date_last_period = check_date_formate(D_Date[last_Period+'_END'])
+            d_date_last_period = D_Date[last_Period+'_END'].replace("-", "/")
         else:
             d_date_last_period = D_Date[last_Period+'_END']
         format_str = '%m/%d/%Y'
@@ -130,6 +114,7 @@ def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
                 trPrice = TR_Price[var1]
                 if var2 not in D_Price:
                     D_Price[var2] = trPrice
+
         
 def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):   
     period = str(line[0])
@@ -155,10 +140,11 @@ def  Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN):
             d2[period] += weight
         else:
             d2[period] = weight
+
     
 def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
     if '-' in E_DATE:
-        E_DATE = check_date_formate(E_DATE)
+        E_DATE = E_DATE.replace("-", "/")
     isins = str(ISIN_LIST)[1:-1]
     delistedISINs=""
     format_str = '%m/%d/%Y' # The format
@@ -175,12 +161,14 @@ def Delisting_Check(ISIN_LIST,E_DATE,IDentifier):
             delistedISINs += ISIN +","
     return delistedISINs
 
+
 def Get_TAX():   
     cur.execute('SELECT * from FDS_DataFeeds.dbo.tax_rate')
     dir = {}
     for row in cur:
         dir[row[1]] = float(row[2].strip()[0:-1])# row[2].strip()
     return dir
+
 
 def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
@@ -195,7 +183,6 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
             D_CA_Dividend[var] = list()
         D_CA_Dividend[var].append(row)
     D_CA["Dividend"] = D_CA_Dividend
-    
     Query= Q.Query_Split(IDentifier,isins,S_DATE,E_DATE)
     cur.execute(Query)
     for row in cur:
@@ -206,6 +193,7 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     D_CA["Split"] = D_CA_Split
     
     return D_CA
+
         
 def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
     isins = str(ISIN_LIST)[1:-1]
@@ -223,6 +211,7 @@ def Get_PRICE(ISIN_LIST,S_DATE,E_DATE,IDentifier):
             currency_list.append(row[3])
     return D_Price,D_LastDate,currency_list,D_ISIN_Currency
 
+
 def Get_TR_PRICE(RIC_LIST,DATE):
     connection = ms.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=65.0.33.214;DATABASE=FDS_Datafeeds;UID=sa;PWD=Indxx@1234')
     cursor = connection.cursor()
@@ -235,6 +224,7 @@ def Get_TR_PRICE(RIC_LIST,DATE):
     cursor.close()
     connection.close()
     return D_TR_Price
+
 
 def Get_Currency(C_list,S_DATE,E_DATE):
     clist = str(C_list)[1:-1]
@@ -323,6 +313,7 @@ def handle_uploaded_file(file):
                 destination.write(chunk)
         return file_name
 
+
 def remove_percent_symbole(weight):
     weight = list(weight)
     weight =  weight[:-1]
@@ -361,10 +352,12 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 
+
 def DateTime(current_time):
     date_time = datetime.datetime.strptime(current_time, "%m/%d/%Y")
     cr_date = date_time.strftime("%Y-%m-%d %H:%M:%S.%f")
     return cr_date
+
 
 def check_ric(ric_data):
     query_ric_param = getRicList(ric_data)
@@ -390,28 +383,21 @@ def getList(dict):
     str1 = "', '".join(list_keys)
     str1 = "'"+str1+"'"
     return str1
+
+
 def getRicList(ric_list):
     str2 = "', '".join(ric_list)
     str2 = "'"+str2+"'"
     return str2
 
 
-def check_date_formate(date):
-    date = date.split('-')
-    date = date[0] +'/'+date[1]+'/'+date[2]
-    return date
-
-def column_validation_check(df):
-    if df.isnull().values.any():
-        response = {"status":False, "message":"Please chekc your CSV file it contain null value add a valid value in csv file."}
-        return response
-    df_column_list = list(df.columns.values)
+def column_validation_check(df_column_list):
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
     if set(df_column_list) != set(column_list):
         response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
         return response
     for col in column_list:
-        if col not in df.columns:
+        if col not in df_column_list:
             response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
             return response
         response = {"status":True, 'message':''}

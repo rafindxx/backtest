@@ -59,9 +59,10 @@ def Validate_Read_CSV(file_Name, IDentifier):
                         error = "Please check portfolio file period of "+ line[0]+ " start date should be same as period of "+ store_period +" end date."
                         errorMessage = {"error":error}
                         return errorMessage
-                    else:
+                    elif store_period != line[0]:
                         store_period = line[0]
-                        store_end_date = line[4]                    
+                        store_end_date = line[4]
+                    else:                    
                         Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
             i += 1
 

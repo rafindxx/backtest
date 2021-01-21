@@ -336,6 +336,7 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     D_ISIN ={}
     D_Date ={}
     data = []
+    D_RIC_ISIN = {}
     start_date = start_date.strftime('%m/%d/%Y')
     end_date = end_date.strftime('%m/%d/%Y')
     st_date = str(period)+"_START"
@@ -355,10 +356,10 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
         comp_data.append(data_composition.country)
         comp_data.append(data_composition.ric)
         comp_isin.append(data_composition.isin)
+        D_RIC_ISIN[data_composition.ric] = data_composition.isin
     data.append(comp_data)
     D_Data[str(period)] = data
     D_ISIN [str(period)] = comp_isin
-    D_RIC_ISIN ={}
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 

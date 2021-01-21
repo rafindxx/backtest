@@ -38,7 +38,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 '''Check for Mandatory Fields'''
                 if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
                     error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                    errorMessage = {"error":error_dat}
+                    errorMessage = {"error":error_dat, 'warning':''}
                     return errorMessage
                 else:                
                     startDate= line[3]
@@ -98,8 +98,8 @@ def Validate_Read_CSV(file_Name, IDentifier):
         if errorMessage not in (None, ""):
             errorMessage = "Please check your portfolio."+errorMessage
         if D_RIC_ISIN:
-            ric_error = check_ric(getList(D_RIC_ISIN))
-            errorMessage = {'error':ric_error}
+            ric_error = check_ric(D_RIC_ISIN)
+            errorMessage = {'error':ric_error['message']}
             return errorMessage
         
     final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
@@ -115,7 +115,7 @@ def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):
         E_Date = datetime.datetime.strptime(D_Date[last_Period+'_END'], format_str).date()
         E_Date = E_Date.strftime("%x")
     if yesterday_date == E_Date:
-        TR_Price = Get_TR_PRICE(getList(D_RIC_ISIN),E_Date)
+        TR_Price = Get_TR_PRICE(getRicList(D_RIC_ISIN),E_Date)
         for ric in D_RIC_ISIN:
             var1 = ric+'_'+date
             var2 = D_RIC_ISIN[ric]+'_'+date        
@@ -359,6 +359,12 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     data.append(comp_data)
     D_Data[str(period)] = data
     D_ISIN [str(period)] = comp_isin
+    # print(D_Index)
+    # print(D_Data)
+    # print(D_ISIN)
+    # print(csv_data['D_Date'])
+    # print(D_RIC_ISIN)
+    # print(last_Period)
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 
@@ -370,36 +376,36 @@ def DateTime(current_time):
 
 
 def check_ric(ric_data):
-    query_ric_param = getRicList(ric_data)
+    ric_list_data = getRicList(ric_data)
+    ric_datas = getList(ric_data)
     ric_active_data= {}
     connection = pyodbc.connect('DRIVER={ODBC Driver 11 for SQL Server};SERVER=3.7.99.191;DATABASE=TR_Datafeeds;UID=sa;PWD=Indxx@1234')
     cursor = connection.cursor()
-    Query= Q.Query_TR_Equity(query_ric_param)
+    Query= Q.Query_TR_Equity(ric_list_data)
     cursor.execute(Query)
     for row in cursor:
         ric_active_data[row[0]] = row[1]
-    for ric in ric_data:
-        if ric not in ric_active_data.keys():
+    ric_active_data = getList(ric_active_data)
+    for ric in ric_datas:
+        if ric not in ric_active_data:
             response = {"status":False, "message":"Please chekc your csv file you have added invalid RIC '" +ric+"'"}
             return response
-        response = {"status":True, "message":''}
-        return response
 
 
-def getList(dict):
+def getRicList(dict_data):
     list_keys = []
-    for key in dict.keys():
+    for key in dict_data.keys():
         list_keys.append(key)
     str1 = "', '".join(list_keys)
     str1 = "'"+str1+"'"
     return str1
 
-
-def getRicList(ric_list):
-    str2 = "', '".join(ric_list)
-    str2 = "'"+str2+"'"
-    return str2
-
+def getList(dict): 
+    list1 = [] 
+    for key in dict.keys(): 
+        list1.append(key) 
+          
+    return list1
 
 def column_validation_check(df_column_list):
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']

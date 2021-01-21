@@ -56,10 +56,10 @@ def Validate_Read_CSV(file_Name, IDentifier):
                         errorMessage = {"error":error}
                         return errorMessage
 
-                    if store_period != line[0] and store_end_date != D_Date[period+'_START']:
-                        error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                        errorMessage = {"error":error}
-                        return errorMessage
+                    # if store_period != line[0] and store_end_date != D_Date[period+'_START']:
+                    #     error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
+                    #     errorMessage = {"error":error}
+                    #     return errorMessage
                     else:
                         store_period = line[0]
                         store_end_date = line[4]                    

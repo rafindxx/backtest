@@ -77,7 +77,6 @@ class PortfolioView(View):
 
 
 def create_portfolio(request, file_name, data, last_Period):
-    print(request.POST.get('download'))
     start_date = last_Period+'_START'
     end_date = last_Period+'_END'
     date_start = DateTime(data['D_Date'][start_date])

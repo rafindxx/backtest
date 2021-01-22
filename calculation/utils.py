@@ -84,7 +84,6 @@ def Validate_Read_CSV(file_Name, IDentifier):
                  warningMessage ="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
-        print(D_Date)
         if '-' in D_Date[last_Period+'_END']:
             d_date_last_period = D_Date[last_Period+'_END'].replace("-", "/")
         else:
@@ -342,13 +341,14 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     end_date = end_date.strftime('%m/%d/%Y')
     st_date = str(period)+"_START"
     en_date = str(period)+"_END"
-    D_Date[st_date] =start_date
-    D_Date[en_date] =end_date
+    D_Date[st_date] = start_date
+    D_Date[en_date] = end_date
+    comp_isin =[]
+    outer_comp_list =[]
     for data_composition in get_composition:
+        comp_data = []
         weights = data_composition.weights
         weights = str(weights)+'%'
-        comp_data = []
-        comp_isin =[]
         comp_data.append(period)
         comp_data.append(data_composition.isin)
         comp_data.append(weights)
@@ -356,11 +356,13 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
         comp_data.append(end_date)
         comp_data.append(data_composition.country)
         comp_data.append(data_composition.ric)
+        outer_comp_list.append(comp_data)
         comp_isin.append(data_composition.isin)
         D_RIC_ISIN[data_composition.ric] = data_composition.isin
-    data.append(comp_data)
-    D_Data[str(period)] = data
+    data.append(outer_comp_list)
+    D_Data[str(period)] = outer_comp_list
     D_ISIN [str(period)] = comp_isin
+    print(D_Data)
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 
@@ -404,7 +406,6 @@ def getList(dict):
     return list1
 
 def column_validation_check(df_column_list):
-    print(df_column_list)
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
     check_order = all(i == j for i, j in zip(df_column_list, column_list))
     if check_order == False:

@@ -76,6 +76,7 @@ var csrftoken = getCookie('csrftoken');
          fd.append('download', download);
          fd.append('confirmbox', confirmbox);
          fd.append('csrfmiddlewaretoken', csrftoken);
+         console.log(fd)
          $.ajax({
                type: 'POST',
                url: 'calculation/portfolio/',

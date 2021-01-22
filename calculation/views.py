@@ -30,7 +30,6 @@ class PortfolioView(View):
             currency = request.POST.get('currency')
             save_data = request.POST.get('save_data')
             csv_data = Validate_Read_CSV('./static/backtest-file/input/'+file_name, identifier)
-            print(csv_data)
             if csv_data['error']:
                 data = {
                     'status': False,
@@ -66,12 +65,12 @@ class PortfolioView(View):
                     D_Index["Currency"] = currency
                     D_Index["Adjustment"] = request.POST.get('spin_off')
                     D_Index["DCFO"] = request.POST.get('download')
-                    # print(D_Index)
-                    # print(csv_data['D_Data'])
-                    # print(csv_data['D_ISIN'])
-                    # print(csv_data['D_Date'])
-                    # print(D_RIC_ISIN)
-                    # print(last_Period)
+                    print(D_Index)
+                    print(csv_data['D_Data'])
+                    print(csv_data['D_ISIN'])
+                    print(csv_data['D_Date'])
+                    print(D_RIC_ISIN)
+                    print(last_Period)
                     save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'], D_RIC_ISIN, last_Period)
                     data = {
                         'status': True,
@@ -84,6 +83,7 @@ class PortfolioView(View):
 
 
 def create_portfolio(request, file_name, data, last_Period):
+    print(request.POST.get('download'))
     start_date = last_Period+'_START'
     end_date = last_Period+'_END'
     date_start = DateTime(data['D_Date'][start_date])
@@ -95,6 +95,7 @@ def create_portfolio(request, file_name, data, last_Period):
         spin_off_treatment = request.POST.get('spin_off'),
         index_value_pr = Decimal(request.POST.get('index_vlaue')),
         market_value_pr = Decimal(request.POST.get('market_value')),
+        constituents_file_download = request.POST.get('download'),
         file_name = file_name,
         period = data['last_Period'],
         start_date = date_start,

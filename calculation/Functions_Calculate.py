@@ -144,7 +144,6 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
         M_CAP_PR += row[7]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_TR += row[8]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_NTR += row[9]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
-
     Index_Value_PR = M_CAP_PR/Divisor_PR
     Index_Value_TR = M_CAP_PR/Divisor_TR
     Index_Value_NTR = M_CAP_PR/Divisor_NTR

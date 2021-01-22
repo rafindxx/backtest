@@ -28,23 +28,23 @@ def Validate_Read_CSV(file_Name, IDentifier):
         for line in csvreader:
             if i ==1:
                 store_period = line[0]
-                store_end_date = line[4] 
+                store_end_date = line[4].replace("-", "/") 
             if i == 0:
                 csv_check = column_validation_check(line)
                 if csv_check['status']== False:
                     errorMessage = {"error":csv_check['message']}
                     return errorMessage
             else:
+                startDate= line[3]
+                endDate  = line[4]
+                period = line[0]
+                last_Period = period
                 '''Check for Mandatory Fields'''
                 if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
                     error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                    errorMessage = {"error":error_dat, 'warning':''}
+                    errorMessage = {"error":error_dat, "warning":""}
                     return errorMessage
                 else:                
-                    startDate= line[3]
-                    endDate  = line[4]
-                    period = line[0]
-                    last_Period = period
                     if '-' in startDate:
                         startDate = startDate.replace("-", "/")
                         line[3] = startDate
@@ -55,13 +55,14 @@ def Validate_Read_CSV(file_Name, IDentifier):
                         error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
                         errorMessage = {"error":error}
                         return errorMessage
-                    if store_period != line[0] and store_end_date != line[3]:
-                        error = "Please check portfolio file period of "+ line[0]+ " start date should be same as period of "+ store_period +" end date."
+                    if str(store_period) != str(line[0]) and store_end_date != line[3]:
+                        error = "Please check portfolio file period of "+ line[0]+" start date"+line[3]+" should be same as period of "+ store_period +" end date "+store_end_date+"."
                         errorMessage = {"error":error}
                         return errorMessage
                     elif store_period != line[0]:
                         store_period = line[0]
-                        store_end_date = line[4]
+                        store_end_date = line[4].replace("-", "/")
+                        Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
                     else:                    
                         Load_Data(line,d1,d2,D_Data,D_Date,D_ISIN)
             i += 1
@@ -83,6 +84,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                  warningMessage ="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
+        print(D_Date)
         if '-' in D_Date[last_Period+'_END']:
             d_date_last_period = D_Date[last_Period+'_END'].replace("-", "/")
         else:

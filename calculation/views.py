@@ -65,12 +65,6 @@ class PortfolioView(View):
                     D_Index["Currency"] = currency
                     D_Index["Adjustment"] = request.POST.get('spin_off')
                     D_Index["DCFO"] = request.POST.get('download')
-                    print(D_Index)
-                    print(csv_data['D_Data'])
-                    print(csv_data['D_ISIN'])
-                    print(csv_data['D_Date'])
-                    print(D_RIC_ISIN)
-                    print(last_Period)
                     save_file = Cal_Index(D_Index, csv_data['D_Data'], csv_data['D_ISIN'], csv_data['D_Date'], D_RIC_ISIN, last_Period)
                     data = {
                         'status': True,
@@ -164,8 +158,8 @@ class RerunPortfolio(View):
                 D_Index["IV"] = int(portfolio_data.index_value_pr)
                 D_Index["MV"] = int(portfolio_data.market_value_pr)
                 D_Index["Currency"] = portfolio_data.currency
-                D_Index["Adjustment"] = request.POST.get('spin_off')
-                D_Index["DCFO"] = request.POST.get('download')
+                D_Index["Adjustment"] = portfolio_data.spin_off_treatment
+                D_Index["DCFO"] = portfolio_data.constituents_file_download
                 start_date = dateutil.parser.parse(str(portfolio_data.start_date)).date()
                 end_date = dateutil.parser.parse(str(portfolio_data.end_date)).date()
                 period = portfolio_data.period

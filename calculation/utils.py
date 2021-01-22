@@ -362,12 +362,6 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     data.append(comp_data)
     D_Data[str(period)] = data
     D_ISIN [str(period)] = comp_isin
-    # print(D_Index)
-    # print(D_Data)
-    # print(D_ISIN)
-    # print(csv_data['D_Date'])
-    # print(D_RIC_ISIN)
-    # print(last_Period)
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 

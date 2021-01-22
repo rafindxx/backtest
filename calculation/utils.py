@@ -31,7 +31,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 store_end_date = line[4].replace("-", "/") 
             if i == 0:
                 csv_check = column_validation_check(line)
-                if csv_check['status']== False:
+                if csv_check['status'] == False:
                     errorMessage = {"error":csv_check['message']}
                     return errorMessage
             else:
@@ -41,8 +41,8 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 last_Period = period
                 '''Check for Mandatory Fields'''
                 if line[0] in (None, "") or line[1] in (None, "") or line[2] in (None, "") or line[3] in (None, "") or line[4] in (None, "") or line[5] in (None, ""):
-                    error_dat= "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
-                    errorMessage = {"error":error_dat, "warning":""}
+                    error_data = "Please check your portfolio.Few Securities does not have proper period, proper ISIN, proper weight , proper Start Date and End Date or proper country."
+                    errorMessage = {"error":error_data, "warning":""}
                     return errorMessage
                 else:                
                     if '-' in startDate:
@@ -203,7 +203,6 @@ def Get_CA(ISIN_LIST,S_DATE,E_DATE,IDentifier):
             D_CA_Split[var] = list()
         D_CA_Split[var].append(row)
     D_CA["Split"] = D_CA_Split
-    
     return D_CA
 
         
@@ -405,13 +404,15 @@ def getList(dict):
     return list1
 
 def column_validation_check(df_column_list):
+    print(df_column_list)
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']
-    if set(df_column_list) != set(column_list):
+    check_order = all(i == j for i, j in zip(df_column_list, column_list))
+    if check_order == False:
         response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
         return response
     for col in column_list:
         if col not in df_column_list:
             response = {"status":False, "message":"Please correct your csv file column order it should be order in 'Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC'"}
             return response
-        response = {"status":True, 'message':''}
-        return response
+    response = {"status":True, "message":""}
+    return response

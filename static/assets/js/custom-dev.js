@@ -205,6 +205,7 @@ $("#portfolio_id").change(function() {
        beforeSend: function(){
             $('.submitax').attr("disabled","disabled");
             $('.loader').css('display','flex');
+            $('#success').attr("style", "display:block") 
          },
          success: function(response){
           console.log(response)
@@ -214,17 +215,16 @@ $("#portfolio_id").change(function() {
    });
 
 //======================Update Tax Rate=================//
-/*$(document).ready(function() {
-
-  $('.mychoice'+counter).click(function() {
-  e.preventDefault();
+$(document).ready(function() {
+$('.mychoice').click(function() {
   var tax_data = new FormData();
-  var country = $("#country").val();
-  var tax = $("#tax").val();
-  tax_data.append('country', country);
+  var mychoice = $(".mychoice").val();
+  var tax = $("#tax_value_"+mychoice).val();
+  var tax_id = $("#tax_id_"+mychoice).val();
   tax_data.append('tax', tax);
+  tax_data.append('id', tax_id)
   console.log(tax_data)
- $.ajax({
+   $.ajax({
        type: 'POST',
        url: 'calculation/update_tax/',
        data: tax_data,
@@ -233,14 +233,16 @@ $("#portfolio_id").change(function() {
        cache: false,
        processData:false,
        beforeSend: function(){
-            $('.submitax').attr("disabled","disabled");
             $('.loader').css('display','flex');
          },
          success: function(response){
+          $('.loader').css('display','none');
+          $("#tax_value_"+mychoice).val(response.tax);
+          $('.mychoice').prop('checked', false);
           console.log(response)
 
          }
       });
-}
+});
 
-});*/
+});

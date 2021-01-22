@@ -197,5 +197,13 @@ class AddNewTax(View):
             response ={'status': True, 'message':'Tax Rate successfully added.'}        
         return JsonResponse(response)
 
+class updateTax(View):
+    def post(self, request):
+        if request.method=='POST':
+            tax_id = request.POST.get('id')
+            tax = request.POST.get('tax')
+            TaxRate.objects.filter(id=tax_id).update(tax=tax)
+            response ={'status': True, 'message':'Tax Rate successfully updated.', 'tax': tax}        
+        return JsonResponse(response)
 
 

@@ -101,10 +101,10 @@
       <form name="addtax" id="addtax" action="#" method="POST">
   <div class="row">
     <div class="col">
-      <input type="text" name="country" id="country" class="form-control" placeholder="Country Name">
+      <input type="text" name="country" id="country" class="form-control" placeholder="Country Name" required>
     </div>
     <div class="col">
-      <input type="text" name="tax" id="tax"class="form-control" placeholder="Country Tax Rate">
+      <input type="text" name="tax" id="tax"class="form-control" placeholder="Country Tax Rate" required>
     </div>
 
   </div>   </br>
@@ -123,6 +123,9 @@
 <!-- Modal -->
    <div class="row"><div class="col"><button type="submit" class="btn btn-primary mb-2" data-toggle="modal" data-target="#tax-myModal">Add New Country Rate</button>
     </div>
+    <div class="alert alert-success" id="success" style="display:none">
+  <strong>Success!</strong> Tax rate is updated successfully.
+</div>
 <form name="" id="" action="" method="POST">
 <div class="col" style="text-align: right;"><button type="submit" class="btn btn-primary mb-2">Update</button></div></div>
 <table class="table">
@@ -140,9 +143,9 @@
       <th scope="row">{{ forloop.counter }}</th>
       <td>{{tax.country}}</td>
       <form id="update_tax_{{tax.country}}">
-      <td><input type="text"  id="tax_value_{{forloop.counter}}" class="add" value="{{tax.tax}}">
-        <input type="hidden" name="tax_id_{{forloop.counter}}" value= "{{tax.id}}"></td>
-      <td> <input type="checkbox" class="form-check-input" id="exampleCheck1" value="update_tax_{{tax.country}}"></td>
+      <td><input type="text"  id="tax_value_{{tax.country}}" class="add" value="{{tax.tax}}">
+        <input type="hidden" name="tax_id_{{tax.country}}" id="tax_id_{{tax.country}}" value= "{{tax.id}}"></td>
+      <td> <input type="checkbox" class="form-check-input mychoice" id="" value="{{tax.country}}"></td>
     </form>
       
     </tr>{% endfor %}

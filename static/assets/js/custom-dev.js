@@ -204,11 +204,12 @@ $("#portfolio_id").change(function() {
        processData:false,
        beforeSend: function(){
             $('.submitax').attr("disabled","disabled");
-            $('.loader').css('display','flex');
-            $('#success').attr("style", "display:block") 
+            $('.loader').css('display','flex');             
          },
          success: function(response){
-          console.log(response)
+         $("#tax-myModal").modal('hide');
+         $('.loader').css('display','none');
+          
 
          }
       });
@@ -239,7 +240,7 @@ $('.mychoice').click(function() {
           $('.loader').css('display','none');
           $("#tax_value_"+mychoice).val(response.tax);
           $('.mychoice').prop('checked', false);
-          console.log(response)
+          $('#success').attr("style", "display:block")
 
          }
       });

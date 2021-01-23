@@ -55,10 +55,12 @@ def Validate_Read_CSV(file_Name, IDentifier):
                         error = "Please check your portfolio.Start date and End date for same perioed should be same.","",D_Data,D_Date,D_ISIN,last_Period,D_RIC_ISIN
                         errorMessage = {"error":error}
                         return errorMessage
+                        
                     if str(store_period) != str(line[0]) and store_end_date != line[3]:
-                        error = "Please check portfolio file period of "+ line[0]+" start date"+line[3]+" should be same as period of "+ store_period +" end date "+store_end_date+"."
+                        error = "Please check portfolio file period of "+ line[0]+" start date "+line[3]+" should be same as period of "+ store_period +" end date "+store_end_date+"."
                         errorMessage = {"error":error}
                         return errorMessage
+
                     elif store_period != line[0]:
                         store_period = line[0]
                         store_end_date = line[4].replace("-", "/")
@@ -70,39 +72,49 @@ def Validate_Read_CSV(file_Name, IDentifier):
         '''Check fo Total sum of weights'''                        
         for key in d1:
             if d1[key]>100.44 or d1[key]<99.50:
-                errorMessage = "Total weight of period " + key +" is " + str(d1[key])+"."
+                error = "Total weight of period " + key +" is " + str(d1[key])+"."
+                errorMessage = {"error":error}
+                return errorMessage
+
         '''Check for Delisted Securities'''                        
         for key in D_ISIN:
             isins=D_ISIN[key]
             startDate = D_Date[key+'_'+'START']
             delistedISINs = Delisting_Check(isins,startDate,IDentifier)
             if delistedISINs not in (None, ""):
-                errorMessage = "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
+                error = "Securities " + delistedISINs +" of period - "+key+" is not trading start at the start of the period . "
+                errorMessage = {"error":error}
+                return errorMessage
+
         '''Check for Warning '''
         for key in d2:
              if d2[key]>45:
                  warningMessage ="Sum of weights of securities for period " + key +" with greater than 5% weight is  " + str(d2[key])+"."
+
         yesterday = datetime.datetime.now()- datetime.timedelta(days=1)
         yesterday_date = yesterday.strftime("%x")
+
         if '-' in D_Date[last_Period+'_END']:
             d_date_last_period = D_Date[last_Period+'_END'].replace("-", "/")
         else:
             d_date_last_period = D_Date[last_Period+'_END']
+
         format_str = '%m/%d/%Y'
         S_Date = datetime.datetime.strptime(d_date_last_period, format_str).date()
         if yesterday_date == S_Date.strftime("%x"):
             for line in D_Data[last_Period]:
                 if line[6] in (None, "") :
-                    errorMessage =  "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
+                    error =  "Please check your portfolio.Few Securities in last period does not have proper RIC.","",D_Data,D_Date,D_ISIN,last_Period
+                    errorMessage = {"error":error}
+                    return errorMessage
                 else:
                      D_RIC_ISIN[line[6]]=line[1]
                     
-        if errorMessage not in (None, ""):
-            errorMessage = "Please check your portfolio."+errorMessage
         if D_RIC_ISIN:
             ric_error = check_ric(D_RIC_ISIN)
-            errorMessage = {'error':ric_error['message']}
-            return errorMessage
+            if ric_error['message']:
+                errorMessage = {'error':ric_error['message']}
+                return errorMessage
         
     final_data = {'error':errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
     return final_data
@@ -362,7 +374,6 @@ def Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition):
     data.append(outer_comp_list)
     D_Data[str(period)] = outer_comp_list
     D_ISIN [str(period)] = comp_isin
-    print(D_Data)
     save_file = Cal_Index(D_Index, D_Data, D_ISIN, D_Date, D_RIC_ISIN, period)
     return save_file
 
@@ -386,7 +397,7 @@ def check_ric(ric_data):
     ric_active_data = getList(ric_active_data)
     for ric in ric_datas:
         if ric not in ric_active_data:
-            response = {"status":False, "message":"Please chekc your csv file you have added invalid RIC '" +ric+"'"}
+            response = {"status":False, "message":"Please check your csv file you have added invalid RIC '" +ric+"'"}
             return response
 
 
@@ -401,9 +412,9 @@ def getRicList(dict_data):
 def getList(dict): 
     list1 = [] 
     for key in dict.keys(): 
-        list1.append(key) 
-          
+        list1.append(key)      
     return list1
+    
 
 def column_validation_check(df_column_list):
     column_list = ['Period', 'ISIN', 'Weights', 'Start date', 'End date', 'Country', 'RIC']

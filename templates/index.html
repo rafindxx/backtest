@@ -82,7 +82,7 @@
                <!-- container -->
             </div>
             <!-- navbar area -->
-            <div id="home" class="header-hero bg_cover d-lg-flex align-items-center" style="background-image: url({% static 'assets/images/header-hero.jpg' %})">
+            <div id="home" class="header-hero bg_cover d-lg-flex align-items-center" style="background-image: url({% static 'assets/images/header-hero.jpg' %});height:550px">
                <div class="container">
                   <div class="row">
                      <div class="col-lg-7">
@@ -115,7 +115,22 @@
                                              </div>
 
                                           </div>
-                                       </div><br/>
+                                       </div>
+
+                                    </div>
+                                    <div class="row">
+                                      
+                                       <div class="col-lg-4 col-md-6">
+                                          <div class="single-contact-info contact-color-3 mt-30 d-flex  wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.9s">
+                                             <div class="contact-info-icon">
+                                                <i class="fa fa-percent" aria-hidden="true"></i>
+                                             </div>
+                                             <div class="contact-info-content media-body">
+                                                <a id="taxRate" href="calculation/tax_rate" style="FONT-WEIGHT: 1000; font-size: 15px;">Current Tax Rate </a>
+                                             </div>
+
+                                          </div>
+                                       </div>
 
                                     </div>
                                  </div>
@@ -139,17 +154,12 @@
                <!-- header hero image -->
 
             </div>
-            <!-- header hero -->
-            <div class="col-lg-12 col-md-6">
-            <div class="single-contact-info contact-color-3 mt-30 d-flex  wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.9s">
-               <a href="calculation/tax_rate">
-            <button type="button" class="btn btn-primary" style="margin-left: 550px;">Current Tax Rate <i class="fa fa-percent" aria-hidden="true"></i></button></a>
-                                       </div></div>
+           
          </header>
       </div>
       <!--====== HEADER PART ENDS ======-->
 
-      <div class="container my-5">
+      <div class="container my-0">
 
          <div class="tabs">
             <div class="tab-2">
@@ -157,23 +167,22 @@
                <input id="tab2-1" name="tabs-two" type="radio" checked="checked">
                <div>
                   <p>
-                  <div class="card-body rounded-top border-top p-5">
+                  <div class="card-body rounded-top border-top p-3">
                      <!-- Section heading -->
-                     <div class="form-group row justify-content-center">
+                     <div class="form-group row justify-content-center" style="margin-left:120px;">
                         <div class="col-6">
-                           <h3 class="font-weight-bold my-4" style="text-align: center">Calculation</h3>
-                           <!-- Section description -->
-                           <p class="font-weight-light mx-auto mb-4 pb-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You Can Perfom Portfolio Generation and Download report</p>
+                           
+                           <p class="font-weight-light mx-auto mb-4 pb-2">You Can Perfom Portfolio Generation and Download Report</p>
                         </div>
                      </div>
+                     <div class="msg"> </div>
                      <form id="backtest-cal" class="backtest-cal" name="backtest-cal" action="#">
-                        <div class="msg"></div>
-                        <div class="form-group row justify-content-center">
+                        
+                        <div class="form-group row justify-content-center" style="    margin-left: 120px;">
                            <div class="col-6">
-                           <div class="input-group" style="margin-left:20px;">
-                                <input type="checkbox" class="form-check-input" id="sav_data">
-                                <spn style="margin-left: 5px; color: #000;">Do You Want To Save This Portfolio?
-                              </div>
+                           <div class="input-group big" style="margin-left:60px;">
+                        <input type="checkbox" class="form-check-input" name="checkbox_1" id="sav_data" /> <label for="ee" style="font-size:20px !important">Save This Portfolio?</label>
+                        </div>
                            </div>
                         </div>
                         <input id="confirmbox" name="confirmbox" value="" type="hidden">
@@ -289,7 +298,9 @@
                      </form>
                   </div>
                    <div class="col-12 justify-content-center downlaod" style="display:none">
-                        <div class="alert alert-success"></div>
+                        <div class="alert alert-success">
+                           Index file and Constiitute file is created in csv formate you can click on below button and Download.
+                        </div>
                         <a id="index" href="">
                      <button type="button" class="btn btn-primary"><i class="fa fa-download" aria-hidden="true"></i> Download Index Values File</button></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="constitute" href="">
@@ -305,11 +316,10 @@
                <input id="tab2-2" name="tabs-two" type="radio">
                <div>
                   <p>
-                  <div class="card-body rounded-top border-top p-5">
+                  <div class="card-body rounded-top border-top p-3">
                      <div class="form-group row justify-content-center">
                         <div class="col-6">
-                           <h3 class="font-weight-bold my-4" style="text-align: center">Portfolio Selection </h3>
-                           <!-- Section description -->
+                          
                            <p class="font-weight-light mx-auto mb-4 pb-2">You can select any of the saved portfolio from a list of all available portfolio</p>
                              <div class="rerun-msg"></div>
                         </div>
@@ -348,7 +358,7 @@
                            </div>
                         </div>
 
-                        <button name="submit2" id="submit2" style="margin: 10px 150px 50px 478px; background-color: #ee3124; border-color:#ee3124" type="submit" class="btn btn-primary">Submit</button>
+                        <button name="submit2" id="submit2" style="margin: 10px 178px 50px 478px; background-color: #ee3124; border-color:#ee3124" type="submit" class="btn btn-primary">Submit</button>
                         <div class="col-4 down1" style="display:none">
                            <div class="input-group">
                            <a id="rerun_index" href="">
@@ -445,6 +455,8 @@
       <script src="{% static 'assets/js/main.js' %}"></script>
       <script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.1/jquery.validate.js"></script>
       <script src="http://ajax.microsoft.com/ajax/jquery.validate/1.11.1/additional-methods.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
       <script src="{% static 'assets/js/custom-dev.js' %}"></script>
       <script type="text/javascript">
          function refreshPage(){

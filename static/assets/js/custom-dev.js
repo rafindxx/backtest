@@ -15,9 +15,9 @@ $(document).ready(function() {
     });
 });
 
-
+toastr.options.timeOut = 300000; // 1.5s
+toastr.options = {positionClass: 'toast-top-center'};
 //===ajax call========//
-
 // using jQuery
 function getCookie(name) {
     var cookieValue = null;
@@ -66,7 +66,6 @@ var csrftoken = getCookie('csrftoken');
           var save_data ='yes';
           fd.append('save_data', save_data);
          }
-         console.log(sav_data)
          fd.append('name', name);
          fd.append('currency', currency);
          fd.append('identifier', identifier);
@@ -76,7 +75,6 @@ var csrftoken = getCookie('csrftoken');
          fd.append('download', download);
          fd.append('confirmbox', confirmbox);
          fd.append('csrfmiddlewaretoken', csrftoken);
-         console.log(fd)
          $.ajax({
                type: 'POST',
                url: 'calculation/portfolio/',
@@ -88,22 +86,22 @@ var csrftoken = getCookie('csrftoken');
          beforeSend: function(){
             $('.submit').attr("disabled","disabled");
             $('.loader').css('display','flex');
+            toastr.info('Please Wait !');
          },
          success: function(response){
             if(response.error){
               $('.loader').css('display','none');
               $('.msg').html('<div class="alert alert-danger"><strong>Error! </strong>'+response.error+'</div>');
-              }else if (response.error_msg){
+              toastr.error('Error! ' +response.error);
+            }else if (response.error_msg){
                 $('.loader').css('display','none');
                 $('.msg').html('<div class="alert alert-danger"><strong>Error! </strong>'+response.error_msg+'</div>');
-
-
+                toastr.error('Error! ' +response.error_msg);
             }else if(response.warning){
                $('.loader').css('display','none');
                $("#myModal").modal('show');
                $('#confirmbox').val("yes");
                $('.warning').html('<div class="alert alert-warning"><strong>Warning! </strong>'+response.warning+'</div>');
-
             }else if(response.success){
               $("#myModal").modal('hide');
                $('.loader').css('display','none');
@@ -111,14 +109,14 @@ var csrftoken = getCookie('csrftoken');
                $(".submit").removeAttr("disabled");
                $('.backtest-cal').css('display','none');
                $('.downlaod').css('display','block');
-               $('.alert-success').html('<strong>Success! </strong>'+response.success);
                $("#index").attr("href", response.index_file);
                $("#constitute").attr("href", response.constituents_file);
+               toastr.success('Success! ' +response.success);
             }
 
          }
       });
-       }
+      }
    });
 //===================ajax call for genrate existing portfolio=======//
 $("#portfolio_id").change(function() {
@@ -137,8 +135,6 @@ $("#portfolio_id").change(function() {
          success: function(response){
           $('#stat_date').val(response.start_date);
           $('#end_date').val(response.end_date);
-          console.log(response)
-
          }
       });
    });
@@ -170,16 +166,15 @@ $("#portfolio_id").change(function() {
        beforeSend: function(){
             $('.submit2').attr("disabled","disabled");
             $('.loader').css('display','flex');
+            toastr.info('Please Wait !');
          },
          success: function(response){
                $('.loader').css('display','none');
                $('.down1').css('display','block');
                $('.down2').css('display','block');
-               $('.rerun-msg').html('<div class="alert alert-success"><strong>Success!</strong>'+response.success+'</div>');
                $("#rerun_index").attr("href", response.index_file);
                $("#rerun_constitute").attr("href", response.constituents_file);
-          console.log(response)
-
+               toastr.success('Success! ' +response.success);
          }
       });
    });
@@ -204,13 +199,13 @@ $("#portfolio_id").change(function() {
        processData:false,
        beforeSend: function(){
             $('.submitax').attr("disabled","disabled");
-            $('.loader').css('display','flex');             
+            $('.loader').css('display','flex');
+            toastr.info('Please Wait !');            
          },
          success: function(response){
          $("#tax-myModal").modal('hide');
          $('.loader').css('display','none');
-          
-
+         toastr.success('Success! Tax rate is add successfully.');
          }
       });
    });
@@ -224,7 +219,6 @@ $('.mychoice').click(function() {
   var tax_id = $("#tax_id_"+mychoice).val();
   tax_data.append('tax', tax);
   tax_data.append('id', tax_id)
-  console.log(tax_data)
    $.ajax({
        type: 'POST',
        url: 'calculation/update_tax/',
@@ -235,13 +229,13 @@ $('.mychoice').click(function() {
        processData:false,
        beforeSend: function(){
             $('.loader').css('display','flex');
+            toastr.info('Please Wait !');
          },
          success: function(response){
           $('.loader').css('display','none');
           $("#tax_value_"+mychoice).val(response.tax);
           $('.mychoice').prop('checked', false);
-          $('#success').attr("style", "display:block")
-
+          toastr.success('Success! Tax rate is updated successfully.');
          }
       });
 });

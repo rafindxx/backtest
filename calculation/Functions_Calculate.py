@@ -41,7 +41,7 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             amount_PR  = amount*exRate
         else:
             amount_PR=0
-            Dividend = div_code            
+            Dividend = amount            
         
         amount_TR  = amount*exRate
         amount_NTR  = amount_Tax*exRate

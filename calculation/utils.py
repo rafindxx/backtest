@@ -116,7 +116,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                 errorMessage = {'error':ric_error['message']}
                 return errorMessage
         
-    final_data = {'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
+    final_data = {'error': errorMessage, 'warning': warningMessage, 'D_Data':D_Data, 'D_Date': D_Date, 'D_ISIN':D_ISIN, 'last_Period':last_Period, 'D_RIC_ISIN':D_RIC_ISIN }
     return final_data
 
 def Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price):

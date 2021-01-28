@@ -160,7 +160,7 @@ class RerunPortfolio(View):
                 D_Index["Adjustment"] = portfolio_data.spin_off_treatment
                 D_Index["DCFO"] = portfolio_data.constituents_file_download
                 start_date = dateutil.parser.parse(str(portfolio_data.start_date)).date()
-                end_date = dateutil.parser.parse(str(portfolio_data.end_date)).date()
+                end_date = dateutil.parser.parse(str(request.POST.get('end_date'))).date()
                 period = portfolio_data.period
             rerun_date = Rerun_Dbdata(D_Index, start_date, end_date, period, get_composition)
             data = {

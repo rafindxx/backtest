@@ -28,7 +28,7 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
     Dividend,sDividend,Spin = 0,0,0
     for row in divList:
         fromCurrency = row[3]
-        div_code = row[4]
+        div_code = row[1]
         spin_off_flag = row[2]
         if spin_off_flag ==1:
             Spin = div_code

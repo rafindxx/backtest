@@ -112,7 +112,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                     
         if D_RIC_ISIN:
             ric_error = check_ric(D_RIC_ISIN)
-            if ric_error['message']:
+            if ric_error['status']== False:
                 errorMessage = {'error':ric_error['message']}
                 return errorMessage
         
@@ -399,6 +399,10 @@ def check_ric(ric_data):
         if ric not in ric_active_data:
             response = {"status":False, "message":"Please check your csv file you have added invalid RIC '" +ric+"'"}
             return response
+        else:
+            response = {"status":True, "message":""}
+            return response
+
 
 
 def getRicList(dict_data):

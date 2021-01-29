@@ -40,7 +40,8 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             row_isin_check = row[0]
         else:
             row_dvnd = row[1]
-            divdnd_total, divdnd = row[1]
+            divdnd_total = row[1]
+            divdnd = row[1]
             row_isin =row[0]
         fromCurrency = row[3]
         div_code = row[4]

@@ -20,13 +20,28 @@ def Print_Reports(Index_List,Constituents_List):
 
 
 def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest_Price):
+    print(divList)
     isin = isinRow[1]
     country = isinRow[5]
     countryTax = Tax_Rate[country]/100
     toCurrency = D_ISIN_Currency[isin];
     aFactor_PR,aFactor_TR,aFactor_NTR = 1,1,1
     Dividend,sDividend,Spin = 0,0,0
+    import operator
+    row_isin_check = list(map(operator.itemgetter(0), divList))
+    row_dvnd_check = list(map(operator.itemgetter(1), divList))
+    row_isin = row_isin_check[0]
+    row_dvnd = row_dvnd_check[1]
     for row in divList:
+        if row_isin == row[0] and row_dvnd != row[1]:
+            divdnd = row_dvnd,row[1]
+            divdnd_total = float(row_dvnd) + float(row[1])
+            divdnd = str(divdnd)[1:-1]
+            row_isin_check = row[0]
+        else:
+            row_dvnd = row[1]
+            divdnd_total, divdnd = row[1]
+            row_isin =row[0]
         fromCurrency = row[3]
         div_code = row[4]
         spin_off_flag = row[2]
@@ -34,14 +49,14 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             Spin = div_code
         
         exRate = Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date)
-        amount = row[1]
+        amount = divdnd_total
         amount_Tax = amount*(1-countryTax)
         if div_code in (11,134):
             sDividend = amount
             amount_PR  = amount*exRate
         else:
             amount_PR=0
-            Dividend = amount            
+            Dividend = divdnd            
         
         amount_TR  = amount*exRate
         amount_NTR  = amount_Tax*exRate

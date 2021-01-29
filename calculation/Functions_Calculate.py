@@ -20,7 +20,6 @@ def Print_Reports(Index_List,Constituents_List):
 
 
 def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest_Price):
-    print(divList)
     isin = isinRow[1]
     country = isinRow[5]
     countryTax = Tax_Rate[country]/100
@@ -41,14 +40,16 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
         else:
             row_dvnd = row[1]
             divdnd_total = row[1]
-            divdnd = row[1]
-            row_isin =row[0]
+            row_isin = row[0]
+        if divdnd:
+            final_divdnd = divdnd
+        else:
+            final_divdnd =row[1]
         fromCurrency = row[3]
         div_code = row[4]
         spin_off_flag = row[2]
         if spin_off_flag ==1:
             Spin = div_code
-        
         exRate = Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date)
         amount = divdnd_total
         amount_Tax = amount*(1-countryTax)
@@ -57,7 +58,7 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
             amount_PR  = amount*exRate
         else:
             amount_PR=0
-            Dividend = divdnd            
+            Dividend = final_divdnd            
         
         amount_TR  = amount*exRate
         amount_NTR  = amount_Tax*exRate

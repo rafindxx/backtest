@@ -35,7 +35,7 @@ def Validate_Read_CSV(file_Name, IDentifier):
                     errorMessage = {"error":csv_check['message']}
                     return errorMessage
             else:
-                startDate= line[3]
+                startDate = line[3]
                 endDate  = line[4]
                 period = line[0]
                 last_Period = period
@@ -277,6 +277,7 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
         D_Index["Index_Value_PR"], D_Index["Index_Value_TR"],D_Index["Index_Value_NTR"]= D_Index["IV"],D_Index["IV"],D_Index["IV"]
         Divisor = D_Index["MV"]/D_Index["IV"]
         D_Index["Divisor_PR"], D_Index["Divisor_TR"],D_Index["Divisor_NTR"]=Divisor,Divisor,Divisor
+
        
         D_Price,D_LastDate,currency_list,D_ISIN_Currency = Get_PRICE(D_ISIN[period],S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
         Set_TR_Price(D_Date,D_RIC_ISIN,last_Period,D_Price)
@@ -284,7 +285,7 @@ def Cal_Index(D_Index,D_Data,D_ISIN,D_Date,D_RIC_ISIN,last_Period):
         Ex_Rate = Get_Currency(currency_list,S_Date_Minus_Five.strftime("%x"),E_Date.strftime("%x"))
         Tax_Rate = Get_TAX()
         D_CA = Get_CA(D_ISIN[period],S_Date.strftime("%x"),E_Date.strftime("%x"),D_Index["Identifier"])
-        
+
         Latest_Price={}
         Latest_Ex_Rate={}
 

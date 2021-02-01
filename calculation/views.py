@@ -23,6 +23,7 @@ class PortfolioView(View):
     def post(self, request):
         D_Index = {}
         if request.method =='POST':
+            confirmbox = request.POST.get('confirmbox')
             file_name = handle_uploaded_file(request.FILES.get('protfolio_file'))
             identifier = request.POST.get('identifier')
             confirmbox = request.POST.get('confirmbox')

@@ -30,30 +30,29 @@ def Adjust_Dividend(divList,isinRow,Tax_Rate,D_ISIN_Currency,Ex_Rate,date,Latest
     row_isin_check = list(map(operator.itemgetter(0), divList))
     row_dvnd_check = list(map(operator.itemgetter(1), divList))
     row_isin = row_isin_check[0]
-    row_dvnd = row_dvnd_check[1]
+    row_dvnd = row_dvnd_check[0]
     for row in divList:
         if row_isin == row[0] and row_dvnd != row[1]:
-            divdnd = row_dvnd,row[1]
+            final_divdnd = row_dvnd,row[1]
             divdnd_total = float(row_dvnd) + float(row[1])
-            divdnd = str(divdnd)[1:-1]
+            final_divdnd = str(final_divdnd)[1:-1]
             row_isin_check = row[0]
         else:
             row_dvnd = row[1]
             divdnd_total = row[1]
             row_isin = row[0]
-        if divdnd:
-            final_divdnd = divdnd
-        else:
             final_divdnd =row[1]
+
         fromCurrency = row[3]
         div_code = row[4]
         spin_off_flag = row[2]
-        if spin_off_flag ==1:
-            Spin = div_code
         exRate = Get_Ex_Rate(fromCurrency,toCurrency,Ex_Rate,date)
         amount = divdnd_total
         amount_Tax = amount*(1-countryTax)
-        if div_code in (11,134):
+
+        if div_code in (200,1055):
+            Spin = div_code
+        if div_code in (8,9,10,11,13,20,71,72,75,77,118,134):
             sDividend = amount
             amount_PR  = amount*exRate
         else:
@@ -91,7 +90,6 @@ def Adjust_CA(D_Index,D_CA,isin_Data_Row,date,Tax_Rate,D_ISIN_Currency,Ex_Rate,L
     if var in D_CA["Split"]:
         split_list = D_CA["Split"][var]
         sFactorPR,sFactorTR,sFactorNTR,Split = Adjust_Split(split_list)
-    
     return dFactorPR*sFactorPR,dFactorTR*sFactorTR,dFactorNTR*sFactorNTR,Dividend,sDividend,Spin,Split 
 
 
@@ -138,8 +136,8 @@ def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISI
     D_Index["M_Cap_TR"]=M_CAP_TR
     D_Index["M_Cap_NTR"]=M_CAP_NTR
     
-    D_Index["Divisor_PR"]=M_CAP_PR/D_Index["Index_Value_PR"]
-    D_Index["Divisor_TR"]=M_CAP_TR/D_Index["Index_Value_TR"]
+    D_Index["Divisor_PR"]= M_CAP_PR/D_Index["Index_Value_PR"]
+    D_Index["Divisor_TR"]= M_CAP_TR/D_Index["Index_Value_TR"]
     D_Index["Divisor_NTR"]=M_CAP_NTR/D_Index["Index_Value_NTR"]
     
     for row in Clist:
@@ -149,6 +147,7 @@ def Cal_Index_Open(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Tax_Rate,D_ISI
 
           
 def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_List_Final,period,Tax_Rate,D_ISIN_Currency,print_flag):
+
     Constituents_List = list()
     M_CAP_PR,M_CAP_TR,M_CAP_NTR = 0,0,0
     Index_Value_PR,Index_Value_TR,Index_Value_NTR = 0,0,0
@@ -161,6 +160,7 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
         M_CAP_PR += row[7]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_TR += row[8]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
         M_CAP_NTR += row[9]*Latest_Price[row[1]][0]*Latest_Ex_Rate[row[1]]
+
     Index_Value_PR = M_CAP_PR/Divisor_PR
     Index_Value_TR = M_CAP_PR/Divisor_TR
     Index_Value_NTR = M_CAP_PR/Divisor_NTR
@@ -181,6 +181,7 @@ def Cal_Index_Close(D_Index,Clist,Latest_Price,Latest_Ex_Rate,date,Constituents_
         row[8] = D_Index["Index_Value_NTR"]
         row[9] = D_Index["M_Cap_NTR"]
         row[10] = D_Index["Divisor_NTR"]
+    print(row)
     Constituents_List_Final.extend(Constituents_List)
     
 def Cal_Shares(D_Index,list,Latest_Price,Latest_Ex_Rate,date,Constituents_List,period,Tax_Rate,D_ISIN_Currency):
